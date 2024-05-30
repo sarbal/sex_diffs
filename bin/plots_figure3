@@ -1,6 +1,8 @@
+# Figure 3: Sex-differential expression.
+
 # Panel A - umap features XY 
 
-load("~/workspace/projects/onek1k/umap_featuresXY.Rdata") 
+load("umap_featuresXY.Rdata") 
 obj@reductions$umap  = umap_v2 
  
 
