@@ -38,7 +38,7 @@ dev.off()
  
  
 # Panel C - DEGs 
-load("data/seurat_sex_degs.Rdata")
+load("seurat_sex_degs.Rdata")
 sex_genes_mat_mast = sex_genes_mat[,grep("mast-", colnames(sex_genes_mat)  ) ]
 sex_genes_mat_mast_up = sex_genes_mat_mast[,grep("up", colnames(sex_genes_mat_mast)  ) ]
 sex_genes_mat_mast_down = sex_genes_mat_mast[,grep("down", colnames(sex_genes_mat_mast)  ) ]
@@ -80,7 +80,7 @@ text(20, bp[1,], celltypes[filt],  adj=0)
 dev.off() 
 
 #
-load("data/mast_sex_degs.Rdata")
+load("mast_sex_degs.Rdata")
 sex_genes_mat_mast_up = sex_deg_mast_sc[,grep("down", colnames(sex_deg_mast_sc)  ) ] # down is male biased here, flipping to keep consistent with other analyses 
 sex_genes_mat_mast_down = sex_deg_mast_sc[,grep("up", colnames(sex_deg_mast_sc)  ) ]
 
@@ -152,7 +152,7 @@ rownames(recur_temp) = x
 
 
 
-pdf("../sex_degs_recurrence_wilcox.pdf")
+pdf("sex_degs_recurrence_wilcox.pdf")
 bp = barplot( t(recur_temp), beside=T, space=c(-1,0), col=colsex[-3], border=NA, ylab="Number of genes", xlab="Recurrence") 
 dev.off() 
 
@@ -222,7 +222,7 @@ genes = rownames(sex_genes_mat)
 sex_genes_mat_mast = sex_genes_mat[,grep("mast", colnames(sex_genes_mat) ) ] 
 
 
-load("V:/projects/onek1k/exprs/annots_x.Rdata")
+load("annotations/annots_x.Rdata")
 enrich_degs = lapply(1:dim(sex_genes_mat_mast)[2], function(i) gene_set_enrichment( genes[sex_genes_mat_mast[,i]>0] , annots_x, voc) )
 enrich_degs = lapply(1:dim(sex_genes_mat_wilcox)[2], function(i) gene_set_enrichment( genes[sex_genes_mat_wilcox[,i]>0] , annots_x, voc) )
 
@@ -290,7 +290,7 @@ sex_genes_mat_mast_up = sex_genes_mat_wilcox_up
 sex_genes_mat_mast_down = sex_genes_mat_wilcox_down
 
 
-load(file="data/markers_azimuth.Rdata")
+load(file="annotations/markers_azimuth.Rdata")
  
 enrich_degs_az = lapply(1:dim(sex_genes_mat_mast)[2], function(i) gene_set_enrichment( genes[sex_genes_mat_mast[,i]>0] , markers_mat, voc2) )
 
