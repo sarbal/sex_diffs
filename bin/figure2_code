@@ -1,20 +1,18 @@
+# Figure 2: Distributions of cell-type proportions across sex. 
 
 ## Panel A 
-in_seurat_file = "~/workspace/data/onek1k/samples/cell_type.RDS"
-in_indiv_phen_file = "~/workspace/data/onek1k/samples/phen.RDS"
-in_meta_file = "~/workspace/data/onek1k/samples/metadata.Rdata"
+in_seurat_file = "cell_type.RDS"
+in_indiv_phen_file = "phen.RDS"
+in_meta_file = "metadata.Rdata"
 # Read in seurat object and individual metadata 
 obj   <- readRDS(in_seurat_file)
 phens <- readRDS(in_indiv_phen_file)
 load( in_meta_file) 
 obj@meta.data = metadata 
 
-load("~/workspace/projects/onek1k/exprs/umap.Rdata") 
-load("~/workspace/projects/onek1k/logs/palette2.Rdata")
-load("~/workspace/projects/onek1k/umap_featuresXY.Rdata") 
-
-
-
+load("umap.Rdata") 
+load("palette2.Rdata")
+load("umap_featuresXY.Rdata") 
 
 # Cell counts 
 freq1 = plyr:: count( obj$predicted.celltype.l2[ obj$sex=="1"] )
@@ -22,7 +20,7 @@ freq2 = plyr:: count( obj$predicted.celltype.l2[ obj$sex=="2"] )
 freq = plyr:: count( obj$predicted.celltype.l2 )
 freq_sex_cell = cbind(freq, freq1[,2], freq2[,2]  )
 colnames(freq_sex_cell) = c("celltype", "total", "male", "female" )
-save(freq_sex_cell, file="../freq_sex_cell_l2.Rdata")
+save(freq_sex_cell, file="freq_sex_cell_l2.Rdata")
 
 # Cell proportions analysis 
 library(speckle)
@@ -132,12 +130,8 @@ save(tempfrac0,freq_sexp0, props0, tempfrac0lf, tempfrac0lm, phens,  tempfrac0lf
 
 
 
-
-
-
-
 skip = c("Doublet",  "HSPC", "Platelet", "Eryth")
- filt = is.na(match( metadata$predicted.celltype.l2 , skip)  ) & !is.na(metadata$predicted.celltype.l2)  
+filt = is.na(match( metadata$predicted.celltype.l2 , skip)  ) & !is.na(metadata$predicted.celltype.l2)  
 freq1 = plyr::count( cbind( metadata$individual ,as.character(metadata$predicted.celltype.l2))[filt,] ) 
 freq_sexp0 = spread(freq1, key = "x.2", value = "freq")
 tenmp = t(freq_sexp0[ ,-1])
