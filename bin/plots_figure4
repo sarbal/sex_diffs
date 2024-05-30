@@ -1,0 +1,585 @@
+# Panel A B C 
+load("data/aurocs_go_cellind_cpm.Rdata") # renamed from "projects/onek1k/coexp/networks/azimuth_nets/aurocs_go_cellind.Rdata
+load("data/aurocs_go_cellind_cpm_sex.Rdata") # renamed from  "projects/onek1k/coexp/networks/azimuth_nets_sex/aurocs_go_cellind.Rdata
+
+skip = c("Eryth", "HSPC", "Platelet", "Doublet", "ILC", "CD8 Proliferating", "CD4 Proliferating")
+filt1 =  is.na(match( aurocs_cell_mat_expand1[,2], skip) ) &  aurocs_cell_mat_expand1[,4] >= 10 
+filt2 =  is.na(match( aurocs_cell_mat_expand2[,2], skip) ) &  aurocs_cell_mat_expand2[,4] >= 10 
+filt =   is.na(match( aurocs_cell_mat_expand[,2], skip) ) &  aurocs_cell_mat_expand[,3] >= 10 
+
+yrange = c(0.45,0.6) 
+#yrange = c( min( aurocs_cell_mat_expand1[filt1,5], aurocs_cell_mat_expand2[filt2,5],aurocs_cell_mat_expand[filt,5]) , max( aurocs_cell_mat_expand1[filt1,5], aurocs_cell_mat_expand2[filt2,5], aurocs_cell_mat_expand[filt,5]))   
+xmax =  max( aurocs_cell_mat_expand1[filt1,4], aurocs_cell_mat_expand2[filt2,4], aurocs_cell_mat_expand[filt,3])
+ 
+mean2=tapply( aurocs_cell_mat_expand2[filt2,5], aurocs_cell_mat_expand2[filt2,2], mean, na.rm=T) 
+mean1=tapply( aurocs_cell_mat_expand1[filt1,5], aurocs_cell_mat_expand1[filt1,2], mean, na.rm=T) 
+meanj=tapply( aurocs_cell_mat_expand[filt,4], aurocs_cell_mat_expand[filt,2], mean, na.rm=T) 
+
+ 
+mncells2=tapply( aurocs_cell_mat_expand2[filt2,4], aurocs_cell_mat_expand2[filt2,2], mean, na.rm=T) 
+mncells1=tapply( aurocs_cell_mat_expand1[filt1,4], aurocs_cell_mat_expand1[filt1,2], mean, na.rm=T) 
+mncellsj=tapply( aurocs_cell_mat_expand[filt,3], aurocs_cell_mat_expand[filt,2], mean, na.rm=T) 
+
+ 
+
+m = match(names(meanj), colpals2[,9] )
+m1 = match(names(mean1), colpals2[,9] )
+m2 = match(names(mean2), colpals2[,9] )
+
+
+mm = match( aurocs_cell_mat_expand[filt,2] , colpals2[,9] )
+mm1 = match( aurocs_cell_mat_expand1[filt1,2], colpals2[,9] )
+mm2 = match(aurocs_cell_mat_expand2[filt2,2], colpals2[,9] )
+
+colsall2 = colpals2[mm2,10]
+colsall1 = colpals2[mm1,10]
+colsall = colpals2[mm,10]
+ 
+ 
+pdf("indiv_perfomances_cpm.pdf")   
+plot(    (aurocs_cell_mat_expand[filt,3]) , aurocs_cell_mat_expand[filt,4], pch=19, col=colsall,cex=1, xlim=c(0, (xmax)), ylim=yrange, xlab="Number of cells",main="joint", ylab="mean AUROC")
+#points(   (mncellsj) , meanj, pch=19,cex=3, col=makeTransparent(colpals2[m,10]) )
+abline( h= meanj, col=colpals2[m,10], lty=2 )
+
+plot(   (aurocs_cell_mat_expand2[filt2,4]) , aurocs_cell_mat_expand2[filt2,5], pch=19, col=colsall2 ,cex=1, xlim=c(0, (xmax)), ylim=yrange, xlab="Number of cells", main="female", ylab="mean AUROC")
+#points(   (mncells2) , mean2, pch=19,cex=3, col=makeTransparent(colpals2[m2,10]) )
+abline( h= mean2, col=colpals2[m2,10], lty=2 )
+
+plot(    (aurocs_cell_mat_expand1[filt1,4]) , aurocs_cell_mat_expand1[filt1,5], pch=19, col=colsall1,cex=1, xlim=c(0, (xmax)), ylim=yrange, xlab="Number of cells", main="male", ylab="mean AUROC")
+#points(   (mncells1) , mean1, pch=19,cex=3,col=makeTransparent(colpals2[m1,10]) )
+abline( h= mean1, col=colpals2[m1,10], lty=2 )
+dev.off() 
+
+ 
+     
+# Panel D - individual nets 
+load("data/aurocs_go_indv_cpm.Rdata") 
+pdf("sex_specific_net_cpm.pdf")
+plot(aurocs_cell_mat_expand[ ,3], aurocs_cell_mat_expand[ ,5], pch=19, col=colsex[as.numeric(aurocs_cell_mat_expand[ ,4])], xlab="Number of cells" , ylab="Average GO slim AUROC", xlim=c(0,(xmax)), ylim=c(0.45,0.60))  
+abline( h=  mean(aurocs_cell_mat_expand[ ,5][aurocs_cell_mat_expand[ ,4] == 1 ] ), col= colsex[1], lty=2 )
+abline( h=  mean(aurocs_cell_mat_expand[ ,5][aurocs_cell_mat_expand[ ,4] == 2 ] ), col= colsex[2], lty=2 )
+abline( h=  mean(aurocs_cell_mat_expand[ ,5]), col= viridis(11)[5], lty=2 )
+
+dev.off() 
+
+
+# Panel E - aggregates
+load("data/aurocs_go_agg_cpm.Rdata") # renamed from "projects/onek1k/coexp/networks/azimuth_nets/aurocs_go_cellind.Rdata
+
+aurocs_agg_mat0 = aurocs_agg_mat [, grep("l1", colnames(aurocs_agg_mat), inver=T) ]
+skip = c("Eryth", "HSPC", "Platelet", "Doublet", "ILC", "CD8 Proliferating", "CD4 Proliferating")
+filt =   is.na(match( colnames(aurocs_agg_mat0), skip) )
+colsex2 = c(colsex, viridis(11)[5]) 
+
+
+load("data/aurocs_go_agg_cpm_sex.Rdata") #  
+ms =  match( gsub("\\.[1-2]", "", agg_cells), colpals2[,9])
+fs = rep(19, length(ms))
+fs[grep("\\.1", agg_cells)] = 15 
+filt2 =  is.na(match(  gsub("\\.[1-2]", "", agg_cells) , skip)) 
+
+m = match( gsub("\\.1", "", colnames(aurocs_agg_mat[,fs==15 & filt2])), colpals2[,9])
+mm = match( colnames(aurocs_agg_mat0)[filt], colpals2[,9])
+
+pdf("agg_performances_per_gogroup_cpm.pdf")   
+ 
+ for( pid in rownames(aurocs_agg_mat)   ){
+    i = which(rownames(aurocs_agg_mat) ==pid)  
+    aggmean1.eg  =  aurocs_agg_mat[,][i,fs==15 & filt2 ]
+    aggmean2.eg  =  aurocs_agg_mat[,][i,fs==19 & filt2 ]
+    aggmean.eg  =  aurocs_agg_mat0[i,filt] 
+    
+ 
+    vioplot( list(aggmean1.eg, aggmean2.eg , aggmean.eg ) , col = 0, main= pid, border = colsex2,  rectCol=colsex2, lineCol= make_transparent(colsex2), colMed = colsex2, lwd=3 )
+    beeswarm(  list(aggmean1.eg, aggmean2.eg, aggmean.eg  ) , pwcol = c(rep(colpals2[m,10],2), colpals2[mm,10])  , main= pid, cex=3, pch=19, add=T, corral="random") 
+} 
+dev.off()  
+
+ 
+
+
+ pdf("agg_performances_cpm.pdf")   
+
+    aggmean1.eg  =  colMeans(aurocs_agg_mat[, ][,fs==15 & filt2 ])
+    aggmean2.eg  =  colMeans(aurocs_agg_mat[, ][,fs==19 & filt2 ])
+    aggmean.eg  =  colMeans(aurocs_agg_mat0[ ,filt]) 
+    
+     vioplot( list(aggmean1.eg, aggmean2.eg , aggmean.eg ) , ylim=yrange, col = 0, main= "", border = colsex2,  rectCol=colsex2, lineCol= make_transparent(colsex2), colMed = colsex2, lwd=3 )
+    beeswarm(  list(aggmean1.eg, aggmean2.eg, aggmean.eg  ) , pwcol = c(rep(colpals2[m,10],2), colpals2[mm,10])  , main= "", cex=3, pch=19, add=T, corral="random") 
+    
+dev.off() 
+
+ 
+pdf("legend_coexp.pdf") 
+plot(0) 
+legend("right", col = colpals2[sort(m),10], pch=19, leg= colpals2[sort(m),9]) 
+dev.off() 
+cols <- colorRampPalette(brewer.pal(11, "PRGn"))(100)
+sample.cor =  cor(cbind(aurocs_agg_mat[, ][,fs==15 & filt2],aurocs_agg_mat[, ][,fs==19 & filt2], aurocs_agg_mat0[,filt])) 
+agg_files_sex = rep( viridis(11)[5], dim(sample.cor)[1]) 
+agg_files_sex[grep("\\.1", rownames(sample.cor))] = colsex[1]
+agg_files_sex[grep("\\.2", rownames(sample.cor))] = colsex[2]
+
+agg_files_cells = rep(colpals2[m,10],3)
+pdf("go_auroc_sim_cpm.pdf", height=10, width=10)
+heatmap.3(  sample.cor , col=cols,  RowSideCol=  agg_files_cells, ColSideCol = agg_files_sex) 
+dev.off() 
+
+ 
+pdf("go_auroc_sim_cpm_l2.pdf", height=10, width=10)
+heatmap.3(  sample.cor[f1,f1] , col=cols, ColSideCol =  meta[f1,2], RowSideCol = agg_files_sex[f1]) 
+dev.off() 
+
+ 
+  
+
+ 
+ 
+pdf("legend_coexp.pdf") 
+plot(0) 
+legend("right", col = colpals2[sort(m),10], pch=19, leg= colpals2[sort(m),9]) 
+dev.off() 
+
+
+
+load(file="data/aurocs_go_agg_all.Rdata")
+yrange = c(0.45,0.65) 
+sex =  aurocs_agg_mat_expand[,3]  
+sex[sex == 0  ]  = 3 
+
+     vioplot( as.numeric(aurocs_agg_mat_expand[,5]) ~ sex   , ylim=yrange, col = 0, main= "", border = colsex,  rectCol=colsex, lineCol= make_transparent(colsex), colMed = colsex, lwd=3 )
+    beeswarm( as.numeric(aurocs_agg_mat_expand[,5]) ~ sex ,  main= "", cex=3, pch=19, add=T, corral="random") 
+
+
+
+
+
+
+
+
+
+library(vioplot)
+library(beeswarm) 
+
+load(file="aurocs_go_agg_call.Rdata")
+load("../../logs/palette2.Rdata") 
+sex = as.numeric(aurocs_agg_mat_expand[,3]) 
+sex[sex == 0 ] = 3 
+celltypes = as.factor(aurocs_agg_mat_expand[,2] ) 
+rescols = sex * 0 
+
+m = match(paste0(gsub("Myleoid", "Myeloid", celltypes) , "_agg"),  colpals4[,1] )
+rescols[ !is.na(m)] = colpals4[m[!is.na(m)],2]
+m = match( celltypes ,  colpals5[,11] )
+rescols[ !is.na(m)] = colpals5[m[!is.na(m)],12]
+
+m = match(  gsub(".l1", "", grep("l1", celltypes, valu=T) )  ,  colpals3[,1])
+rescols[ grep("l1", celltypes)][!is.na(m)] = colpals3[m[!is.na(m)],3]
+rescols[rescols==0] = c( "brown", "brown", "brown", "grey", "black", "black", "black" ) 
+
+nnets = as.numeric(aurocs_agg_mat_expand[,4])
+
+nnets[grep("l1",celltypes ) ]  = 75
+nnets[grep("indv", celltypes) ] = c(565, 417, 982)
+nnets[grep("pbmcs_agg", celltypes) ] = c(21,21,21,42) 
+sex2 = sex 
+ colsexrep = unlist(lapply(1:3, function(i) rep(colsex[i],4 ) )  )
+ 
+pdf("agg_All_perfo.pdf") 
+vioplot( as.numeric(aurocs_agg_mat_expand[,5]) ~ sex , rectCol=colsex, col=0, border=colsex, lwd=2, ylim=c(0.45,0.6))  
+beeswarm( as.numeric(aurocs_agg_mat_expand[,5]) ~ sex , pwcol= rescols, pch=19, ylim=c(0.45,0.6), add=T, cex=3) 
+
+
+filt = grep("l1|oid|pbmc", aurocs_agg_mat_expand[,2], inver=T ) 
+vioplot( as.numeric(aurocs_agg_mat_expand[filt,5]) ~ sex[filt] , rectCol=colsex, col=0, border=colsex, lwd=2, ylim=c(0.45,0.6))  
+beeswarm( as.numeric(aurocs_agg_mat_expand[filt,5]) ~ sex[filt] , pwcol= rescols[filt], pch=19, ylim=c(0.45,0.6), add=T, cex=3) 
+
+filt = grep("l1", aurocs_agg_mat_expand[,2] ) 
+vioplot( as.numeric(aurocs_agg_mat_expand[filt,5]) ~ sex[filt] , rectCol=colsex, col=0, border=colsex, lwd=2, ylim=c(0.45,0.6))  
+beeswarm( as.numeric(aurocs_agg_mat_expand[filt,5]) ~ sex[filt] , pwcol= rescols[filt], pch=19, ylim=c(0.45,0.6), add=T, cex=3) 
+sex2[filt] = sex[filt] + 0.2 
+
+ 
+filt = grep("oid", aurocs_agg_mat_expand[,2] ) 
+vioplot( as.numeric(aurocs_agg_mat_expand[filt,5]) ~ sex[filt] , rectCol=colsex, col=0, border=colsex, lwd=2, ylim=c(0.45,0.6))  
+beeswarm( as.numeric(aurocs_agg_mat_expand[filt,5]) ~ sex[filt] , pwcol= rescols[filt], pch=19, ylim=c(0.45,0.6), add=T, cex=3) 
+sex2[filt] = sex[filt] + 0.4 
+
+
+filt = grep("pbmc", aurocs_agg_mat_expand[,2] ) 
+vioplot( as.numeric(aurocs_agg_mat_expand[filt,5]) ~ sex[filt] , rectCol=colsex, col=0, border=colsex, lwd=2, ylim=c(0.45,0.6))  
+beeswarm( as.numeric(aurocs_agg_mat_expand[filt,5]) ~ sex[filt] , pwcol= rescols[filt], pch=19, ylim=c(0.45,0.6), add=T, cex=3) 
+sex2[filt] = sex[filt] + 0.6 
+
+
+dev.off() 
+ 
+
+pdf("agg_All_perfo_v2.pdf", width=15) 
+
+vioplot( as.numeric(aurocs_agg_mat_expand[,5]) ~ sex2 , rectCol=colsexrep, col=0, border=colsexrep, lwd=2, ylim=c(0.45,0.6))  
+beeswarm( as.numeric(aurocs_agg_mat_expand[,5]) ~ sex2 , pwcol= rescols, pch=19, ylim=c(0.45,0.6), add=T, cex=3) 
+dev.off() 
+
+ 
+legcolagg =  unique(cbind(rescols, aurocs_agg_mat_expand[,2] ) )
+pdf("legend_coexp_agg.pdf", height=10) 
+plot(0) 
+legend("right", col = legcolagg[,1] , pch=19, leg=legcolagg[,2] ) 
+dev.off() 
+
+
+
+
+
+
+
+
+
+# Panel 
+rownames(nd_cor) = meta[,4] 
+colnames(nd_cor) = meta[,4]
+load("data/nds_mat_cor.Rdata")
+load("meta.Rdata") 
+cols <- colorRampPalette(brewer.pal(11, "PRGn"))(100)
+load("../../../logs/palette2.Rdata") 
+
+pdf("node_degree_sim.pdf", height=10, width=10)
+heatmap.3(nd_cor, col=cols, RowSideCol = colsex[as.numeric(meta[,5])], ColSideCol = meta[,2]) 
+dev.off() 
+
+f1 = meta[,7] == "l2"
+pdf("node_degree_sim_l2.pdf", height=10, width=10)
+heatmap.3(nd_cor[f1,f1], col=cols, RowSideCol = colsex[as.numeric(meta[f1,5])], ColSideCol = meta[f1,2]) 
+dev.off() 
+ 
+
+load("data/coexp_sim.Rdata")
+pdf("coexp_sim.pdf", height=10, width=10)
+heatmap.3(  coexp_cor, col=cols,  RowSideCol = colsex[as.numeric(meta[,5])], ColSideCol = meta[,2]) 
+dev.off() 
+
+ pdf("coexp_sim_l2.pdf", height=10, width=10)
+heatmap.3(  coexp_cor[f1,f1], col=cols,  RowSideCol = colsex[as.numeric(meta[f1,5])], ColSideCol = meta[f1,2]) 
+dev.off() 
+
+ 
+
+load("data/aurocs_sim.Rdata")
+ pdf("go_auroc_sim.pdf", height=10, width=10)
+heatmap.3(  sample.cor, col=cols,  RowSideCol = colsex[as.numeric(meta[,5])], ColSideCol = meta[,2]) 
+dev.off() 
+ 
+  
+ 
+
+
+ load("V:/projects/onek1k/coexp/networks/summary/aurocs_aurocs_all.Rdata") 
+sample.cor = cor(aurocs_all, m="s")
+save(sample.cor, file="../../../figures_2022_05/data/aurocs_sim.Rdata") 
+
+
+load("V:/projects/onek1k/coexp/networks/summary/aurocs_other_all.Rdata") 
+sample.cor = cor(aurocs_all, m="s")
+save(sample.cor, file="../../../figures_2022_05/data/aurocs_other_sim.Rdata") 
+
+
+load("V:/projects/onek1k/coexp/networks/summary/aurocs_msig_all.Rdata") 
+sample.cor = cor(aurocs_all, m="s")
+save(sample.cor, file="../../../figures_2022_05/data/aurocs_msig_sim.Rdata") 
+
+
+
+ 
+load("data/aurocs_other_sim.Rdata")
+ pdf("other_auroc_sim.pdf", height=10, width=10)
+heatmap.3(  sample.cor, col=cols,  RowSideCol = colsex[as.numeric(meta[,5])], ColSideCol = meta[,2]) 
+dev.off() 
+ 
+  
+ load("data/aurocs_msig_sim.Rdata")
+ pdf("msig_auroc_sim.pdf", height=10, width=10)
+heatmap.3(  sample.cor, col=cols,  RowSideCol = colsex[as.numeric(meta[,5])], ColSideCol = meta[,2]) 
+dev.off() 
+ 
+
+par(mfrow=c(2,2))  
+vioplot.2(list(coexp_cor[f4,f1], coexp_cor[f4,f2], coexp_cor[f4,f3], coexp_cor[f4,f4] ) ) 
+vioplot.2(list(coexp_cor[f3,f1], coexp_cor[f3,f2], coexp_cor[f3,f3], coexp_cor[f3,f4] ) ) 
+vioplot.2(list(coexp_cor[f2,f1], coexp_cor[f2,f2], coexp_cor[f2,f3], coexp_cor[f2,f4] ) ) 
+vioplot.2(list(coexp_cor[f1,f1], coexp_cor[f1,f2], coexp_cor[f1,f3], coexp_cor[f1,f4] ) ) 
+
+
+par(mfrow=c(2,2))  
+vioplot.2(list(nd_cor[f4,f1], nd_cor[f4,f2], nd_cor[f4,f3], nd_cor[f4,f4] ) ) 
+vioplot.2(list(nd_cor[f3,f1], nd_cor[f3,f2], nd_cor[f3,f3], nd_cor[f3,f4] ) ) 
+vioplot.2(list(nd_cor[f2,f1], nd_cor[f2,f2], nd_cor[f2,f3], nd_cor[f2,f4] ) ) 
+vioplot.2(list(nd_cor[f1,f1], nd_cor[f1,f2], nd_cor[f1,f3], nd_cor[f1,f4] ) ) 
+
+
+
+
+
+
+
+# Suppp 
+
+f1 = meta[,7] == "l2"
+load("data/coexp_cor_redone.Rdata") 
+pdf("../coexp_sim_l2_final.pdf", height=10, width=10)
+heatmap.3(  coexp_cor[f1,f1], col=cols,  RowSideCol = colsex[as.numeric(meta[f1,5])], ColSideCol = meta[f1,2]) 
+dev.off() 
+
+
+
+
+
+files = gsub(".other.Rdata", ".Rdata", meta[,1])
+files = gsub("/azimuth_nets_broad/", "/azimuth_nets_broad/aggs/", files)
+files2 = gsub(".aurocs.Rdata", ".Rdata",  rownames(sample.cor))
+files2 = gsub("/azimuth_nets_broad/", "/azimuth_nets_broad/aggs/", files2)
+
+a1 = array(sample.cor)
+a2 = array(nd_cor)
+a3 = array(coexp_cor)
+
+ba = rep( files2, 100 ) 
+bb =  unlist(lapply(1:100, function(i) rep(files2[i], 100) ) )
+bc = (ba != bb)
+
+# celltype
+ca = meta[ match(ba, files2),4]
+cb = meta[ match(bb, files2),4]
+cc = 1*(ca == cb)
+cc = factor(cc)
+
+# sex 
+da = meta[ match(ba, files2),5]
+db = meta[ match(bb, files2),5]
+dc = 1*(da == db)
+dc = factor(dc)
+
+
+ea = meta[ match(ba, files2),7]
+eb = meta[ match(bb, files2),7]
+
+filts = (ba != bb) &  ea == "l2" & eb == "l2" 
+
+testcols =  rocket(4)[factor(paste( dc[filts] , cc[filts]  ) ) ] 
+
+
+pdf("comparisons_diffcoep.pdf", height=10, width=15)
+par(mfrow=c(2,3)) 
+vioplot(a3[filts] ~ dc[filts] + cc[filts] ) 
+vioplot(a2[filts] ~ dc[filts] + cc[filts] ) 
+vioplot(a1[filts] ~ dc[filts] + cc[filts] ) 
+
+plot(a1[filts], a2[filts], pch=19, xlab="Functional", ylab="Node degree", col=testcols)
+plot(a1[filts], a3[filts], pch=19, xlab="Functional", ylab="Coexp", col=testcols)
+plot(a3[filts], a2[filts], pch=19, xlab="Coexp", ylab="Node degree", col=testcols)
+
+
+dev.off() 
+
+  
+
+
+
+library(dendextend)
+hc3 = heatmap.3(  coexp_cor[f1,f1], col=cols,  RowSideCol = colsex[as.numeric(meta[f1,5])], ColSideCol = meta[f1,2]) 
+hc2 = heatmap.3(  nd_cor[f1,f1], col=cols,  RowSideCol = colsex[as.numeric(meta[f1,5])], ColSideCol = meta[f1,2]) 
+hc1 = heatmap.3(  sample.cor[f1,f1], col=cols,  RowSideCol = colsex[as.numeric(meta[f1,5])], ColSideCol = meta[f1,2]) 
+
+
+dend1 = hc1$colDendrogram
+dend2 = hc2$colDendrogram
+dend3 = hc3$colDendrogram
+
+labels_colors(dend1)= meta[f1,2][hc1$colInd] 
+labels_colors(dend2)= meta[f1,2][hc2$colInd] 
+labels_colors(dend3)= meta[f1,2][hc3$colInd] 
+
+
+
+filess = gsub("~/workspace/projects/onek1k/coexp/networks/|.other.Rdata|azimuth_nets/aggs_cpm/|azimuth_nets_sex/aggs_cpm/", "", meta[f1,1])
+filess[65] = "pbmc_agg_v2"
+filess = gsub(".cpm.agg", "", filess)
+
+labels(dend1)= filess[hc1$colInd] 
+labels(dend2)= filess[hc2$colInd] 
+labels(dend3)= filess[hc3$colInd] 
+
+
+
+
+dl <- dendlist(dend2, dend1)
+tanglegram(dl, highlight_distinct_edges  = FALSE, highlight_branches_lwd = FALSE)
+dl2 <- dendlist(dend3, dend2)
+tanglegram(dl2, highlight_distinct_edges  = FALSE, highlight_branches_lwd = FALSE)
+
+pdf("../tangle_grams_v2.pdf")
+tanglegram(dl2, highlight_distinct_edges  = FALSE, highlight_branches_lwd = FALSE)
+tanglegram(dl, highlight_distinct_edges  = FALSE, highlight_branches_lwd = FALSE)
+dev.off() 
+
+
+
+
+
+
+load("ncounts.Rdata") 
+ 
+sex = rep(3, 100 ) 
+sex[colcols[,1] == colsex[1] ] = 1 
+sex[colcols[,1] == colsex[2] ] = 2 
+
+legcols = cbind(celltypes, sex , colcols[,c(2,1)], rowcols)
+
+a = as.numeric(as.factor(col1cols)  ) 
+b = as.numeric(as.factor(col2cols)  ) 
+c = 1* (a == b )
+
+row2cols = legcols[match(all_comp3[,2], legcols[,3]  ) ,5] 
+row1cols = legcols[match(all_comp3[,1], legcols[,3]  ) ,5] 
+aa = as.numeric(as.factor(row1cols)  ) 
+bb = as.numeric(as.factor(row2cols)  ) 
+cc = 1*(aa == bb )
+
+N = 108272970
+all_comp3[,1] 
+
+tt2 = paste0(meta[f,4],".", meta[f,5], ".cpm.agg" ) 
+tt2 = gsub("3.", "", tt2 )
+tt2[grep("all", tt2)] = grep("pbmc_agg", tt, val=T) 
+ft1 = !is.na(match(all_comp3[,1], tt2) ) 
+ft2 = !is.na(match(all_comp3[,2], tt2) ) 
+filts = ft1  & ft2 
+
+sex1 = rep(3, length(all_comp3[,1])) 
+sex2 = rep(3, length(all_comp3[,2])) 
+
+sex1[ grep("\\.1", all_comp3[,1]) ] = 1
+sex1[ grep("\\.2", all_comp3[,1]) ] = 2
+
+sex2[ grep("\\.2", all_comp3[,2]) ] = 2 
+sex2[ grep("\\.1", all_comp3[,2]) ] = 1 
+
+sex1[ grep("^male", all_comp3[,1])] = 1
+sex2[ grep("^male", all_comp3[,2])] = 1 
+
+sex2[ grep("^female", all_comp3[,2])] = 2
+sex1[ grep("female", all_comp3[,1])]  = 2
+
+cell1 =  gsub(".cpm.agg|\\.1|\\.2", "", all_comp3[,1])
+cell2 =  gsub(".cpm.agg|\\.1|\\.2", "", all_comp3[,2])
+
+cell1 =  gsub(".cpm.agg", "", cell1)
+cell2 =  gsub(".cpm.agg", "", cell2)
+
+cell1[ grep("agg|pbmc", cell1)] = "all"
+cell2[ grep("agg|pbmc", cell2)] = "all"
+ 
+level1 = rep("l2", length(all_comp3[,1])) 
+level2 = rep("l2", length(all_comp3[,1])) 
+
+
+level1[ grep("l1", all_comp3[,1]) ] = "l1"
+level2[ grep("l1", all_comp3[,2]) ] = "l1"
+
+level1[ grep("Myl|Lymph|pbmcs", all_comp3[,1]) ] = "l0"
+level2[ grep("Myl|Lymph|pbmcs", all_comp3[,2]) ] = "l0"
+
+
+level1[ grep("female_agg|male_agg|^agg", all_comp3[,1]) ] = "mix"
+level2[ grep("female_agg|male_agg|^agg", all_comp3[,2]) ] = "mix"
+
+cc = 1*(cell1 == cell2) 
+dc = 1*(sex1 == sex2) 
+cc = factor(cc)
+dc = factor(dc)
+filts = level1 == "l2" & level2 == "l2"
+
+testcols =   (rocket(6))[2:5][factor(paste( dc[filts] , cc[filts]  ) ) ] 
+
+leg = unique(cbind(testcols, (paste( dc[filts] , cc[filts]  )  )  )  )
+leg = leg[c(3,2,1,4),]
+
+
+ 
+temp = spread( all_comp3[filts, 1:3], key=2, value=3 , fill=0) 
+rownames(temp)  = temp[,1] 
+temp2 = apply(temp, 2, as.numeric ) / N 
+m = match( meta[f,10], colnames(temp2)) 
+temp3 = temp2[m,m]
+
+
+pdf("percent_frac.pdf")
+vioplot( all_comp3[filts,3]/N ~ dc[filts]+cc[filts] , xlab=""   , ylab="Fraction links changed" , names=c("Cross sex and cell-type", "Cross cell-type", "Cross sex", "Same"), col=leg[,1]) 
+heatmap.3(temp3, col=(cols11), ColSideCol= meta[f,2], RowSideCol=colsex[as.numeric(meta[f,5])] )
+dev.off() 
+
+
+nd1 = colSums(abs(rs_mat) >= 3  )
+save(nd1, file="../nd_residuals_sum.Rdata")
+
+library(tidyverse) 
+source("V:/bin/helper.r") 
+load("diffcoexp/meta.Rdata") 
+load("../../../figures_2022_05/data/palette2.Rdata") 
+
+temp = cbind(do.call(rbind, strsplit(names(nd1) , " " ) ) , nd1) 
+temp2 = rbind(temp, temp[,c(2,1,3)] ) 
+temp2 = as.data.frame(temp2) 
+temp22 = spread(temp2, key=2, valu=3, fill=0 ) 
+temp3 = temp22[,-1] 
+rownames(temp3)  = temp22[,1] 
+temp4 = apply(temp3, 2, as.numeric) 
+N = 14716 
+o = order(as.numeric(rownames(temp3))  ) 
+perc_nd = temp4[o,o]/N
+rownames(perc_nd) = 1:100 
+f = meta[,7] == "l2" 
+
+
+pdf("percent_frac_nd.pdf")
+heatmap.3(perc_nd[f,f], ColSideCol = meta[f,2], RowSideCol = colsex[as.numeric(meta[f,5])]  , col=cols11) 
+dev.off() 
+
+
+files = gsub(".other.Rdata", ".Rdata", meta[,1])
+files = gsub("/azimuth_nets_broad/", "/azimuth_nets_broad/aggs/", files)
+ 
+
+ba = rep( files, 100 ) 
+bb =  unlist(lapply(1:100, function(i) rep(files[i], 100) ) )
+bc = (ba != bb)
+
+# celltype
+ca = meta[ match(ba, files),4]
+cb = meta[ match(bb, files),4]
+cc = 1*(ca == cb)
+cc = factor(cc)
+
+# sex 
+da = meta[ match(ba, files),5]
+db = meta[ match(bb, files),5]
+dc = 1*(da == db)
+dc = factor(dc)
+
+
+ea = meta[ match(ba, files),7]
+eb = meta[ match(bb, files),7]
+
+filts = (ba != bb) &  ea == "l2" & eb == "l2" 
+
+testcols =  rocket(4)[factor(paste( dc[filts] , cc[filts]  ) ) ] 
+
+leg = unique(cbind(testcols, (paste( dc[filts] , cc[filts]  )  )  )  )
+leg = leg[c(3,2,1,4),]
+
+
+
+a4 = array(perc_nd )
+vioplot(a4[filts] ~ dc[filts] + cc[filts] , xlab=""   , ylab="Fraction genes changed" , names=c("Cross sex and cell-type", "Cross cell-type", "Cross sex", "Same"), col=leg[,1])  
+
+

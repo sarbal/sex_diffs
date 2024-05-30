@@ -1,0 +1,519 @@
+cols <- colorRampPalette(brewer.pal(11, "PRGn"))(100)
+agg_files = rownames(sample.cor)
+ff = grep("_agg|l1", agg_files, inver=T ) 
+agg_files_sex = rep( viridis(11)[5], length(agg_files)) 
+agg_files_sex[grep("\\.1", agg_files)] = colsex[1]
+agg_files_sex[grep("\\.2", agg_files)] = colsex[2]
+
+ agg_files_cells =  rep(colpals2[m,10],3)
+save(sample.cor, agg_files_sex, agg_files_cells, file="data/aurocs_sim.Rdata") 
+
+
+aggmean.eg
+  vioplot( list(aggmean1.eg, aggmean2.eg , aggmean.eg ) , ylim=yrange, col = 0, main= pid, border = colsex2,  rectCol=colsex2, lineCol= make_transparent(colsex2), colMed = colsex2, lwd=3 )
+    beeswarm(  list(aggmean1.eg, aggmean2.eg, aggmean.eg  ) , pwcol = c(rep(colpals2[m,10],2), colpals2[mm,10])  , main= pid, cex=3, pch=19, add=T, corral="random") 
+     vioplot( list(aggmean1.eg, aggmean2.eg , aggmean.eg ) , ylim=(0,1), col = 0, main= pid, border = colsex2,  rectCol=colsex2, lineCol= make_transparent(colsex2), colMed = colsex2, lwd=3 )
+    beeswarm(  list(aggmean1.eg, aggmean2.eg, aggmean.eg  ) , pwcol = c(rep(colpals2[m,10],2), colpals2[mm,10])  , main= pid, cex=3, pch=19, add=T, corral="random") 
+     vioplot( list(aggmean1.eg, aggmean2.eg , aggmean.eg ) , ylim=c(0,1), col = 0, main= pid, border = colsex2,  rectCol=colsex2, lineCol= make_transparent(colsex2), colMed = colsex2, lwd=3 )
+    beeswarm(  list(aggmean1.eg, aggmean2.eg, aggmean.eg  ) , pwcol = c(rep(colpals2[m,10],2), colpals2[mm,10])  , main= pid, cex=3, pch=19, add=T, corral="random") 
+     beeswarm(  list(aggmean1.eg, aggmean2.eg, aggmean.eg  ) ,    main= pid, cex=3, pch=19, add=T, corral="random") 
+         beeswarm(  list(aggmean1.eg, aggmean2.eg, aggmean.eg  ) ,    main= pid,  pch=19, add=T, corral="random") 
+     vioplot( list(aggmean1.eg, aggmean2.eg , aggmean.eg ) , ylim=c(0,1), col = 0, main= pid, border = colsex2,  rectCol=colsex2, lineCol= make_transparent(colsex2), colMed = colsex2, lwd=3 )
+   # beeswarm(  list(aggmean1.eg, aggmean2.eg, aggmean.eg  ) , pwcol = c(rep(colpals2[m,10],2), colpals2[mm,10])  , main= pid, cex=3, pch=19, add=T, corral="random") 
+     beeswarm(  list(aggmean1.eg, aggmean2.eg, aggmean.eg  ) ,    main= pid,  pch=19, add=T, corral="random") 
+    aggmean1.eg  =  colMeans(aurocs_agg_mat[,fl2][,fs==15 & filt2 ])
+    aggmean2.eg  =  colMeans(aurocs_agg_mat[,fl2][,fs==19 & filt2 ])
+    aggmean.eg  =  colMeans(aurocs_agg_mat0[ ,filt]) 
+     vioplot( list(aggmean1.eg, aggmean2.eg , aggmean.eg ) , ylim=yrange, col = 0, main= pid, border = colsex2,  rectCol=colsex2, lineCol= make_transparent(colsex2), colMed = colsex2, lwd=3 )
+    beeswarm(  list(aggmean1.eg, aggmean2.eg, aggmean.eg  ) , pwcol = c(rep(colpals2[m,10],2), colpals2[mm,10])  , main= pid, cex=3, pch=19, add=T, corral="random") 
+ pdf("agg_performances.pdf")   
+    aggmean1.eg  =  colMeans(aurocs_agg_mat[,fl2][,fs==15 & filt2 ])
+    aggmean2.eg  =  colMeans(aurocs_agg_mat[,fl2][,fs==19 & filt2 ])
+    aggmean.eg  =  colMeans(aurocs_agg_mat0[ ,filt]) 
+     vioplot( list(aggmean1.eg, aggmean2.eg , aggmean.eg ) , ylim=yrange, col = 0, main= pid, border = colsex2,  rectCol=colsex2, lineCol= make_transparent(colsex2), colMed = colsex2, lwd=3 )
+    beeswarm(  list(aggmean1.eg, aggmean2.eg, aggmean.eg  ) , pwcol = c(rep(colpals2[m,10],2), colpals2[mm,10])  , main= pid, cex=3, pch=19, add=T, corral="random") 
+dev.off() 
+plot(0) 
+legend("top", col = colpals2[m,10], pch=19, leg=names(aggmean.eg) 
+) 
+m
+legend("top", col = colpals2[order(m),10], pch=19, leg= colpals2[order(m),9]) 
+plot(0) 
+legend("top", col = colpals2[order(m),10], pch=19, leg= colpals2[order(m),9]) 
+m
+legend("top", col = colpals2[sort(m),10], pch=19, leg= colpals2[sort(m),9]) 
+plot(0) 
+legend("right", col = colpals2[sort(m),10], pch=19, leg= colpals2[sort(m),9]) 
+pdf("legend_coexp.pdf") 
+plot(0) 
+legend("right", col = colpals2[sort(m),10], pch=19, leg= colpals2[sort(m),9]) 
+dev,off() 
+dev.off() 
+ for( pid in rownames(aurocs_agg_mat)   ){
+    i = which(rownames(aurocs_agg_mat) ==pid)  
+    aggmean1.eg  =  aurocs_agg_mat[,fl2][i,fs==15 & filt2 ]
+    aggmean2.eg  =  aurocs_agg_mat[,fl2][i,fs==19 & filt2 ]
+    aggmean.eg  =  aurocs_agg_mat0[i,filt] 
+    vioplot( list(aggmean1.eg, aggmean2.eg , aggmean.eg ) , col = 0, main= pid, border = colsex2,  rectCol=colsex2, lineCol= make_transparent(colsex2), colMed = colsex2, lwd=3 )
+    beeswarm(  list(aggmean1.eg, aggmean2.eg, aggmean.eg  ) , pwcol = c(rep(colpals2[m,10],2), colpals2[mm,10])  , main= pid, cex=3, pch=19, add=T, corral="random") 
+} 
+pdf("agg_performances_per_gogroup.pdf")   
+ for( pid in rownames(aurocs_agg_mat)   ){
+    i = which(rownames(aurocs_agg_mat) ==pid)  
+    aggmean1.eg  =  aurocs_agg_mat[,fl2][i,fs==15 & filt2 ]
+    aggmean2.eg  =  aurocs_agg_mat[,fl2][i,fs==19 & filt2 ]
+    aggmean.eg  =  aurocs_agg_mat0[i,filt] 
+    vioplot( list(aggmean1.eg, aggmean2.eg , aggmean.eg ) , col = 0, main= pid, border = colsex2,  rectCol=colsex2, lineCol= make_transparent(colsex2), colMed = colsex2, lwd=3 )
+    beeswarm(  list(aggmean1.eg, aggmean2.eg, aggmean.eg  ) , pwcol = c(rep(colpals2[m,10],2), colpals2[mm,10])  , main= pid, cex=3, pch=19, add=T, corral="random") 
+} 
+dev.off()  
+  aurocs_agg_mat[,fl2][,filt2]
+heatmap.3(  aurocs_agg_mat[,fl2][,filt2])
+heatmap.3(  aurocs_agg_mat[,fl2][,filt2], col=plasma(100) )
+heatmap.3(  aurocs_agg_mat0[,filt], col=plasma(100) )
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,filt2], aurocs_agg_mat0[,filt]), col=plasma(100) )
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,filt2], aurocs_agg_mat0[,filt]), col=plasma(100), Colv=F )
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,filt2], aurocs_agg_mat0[,filt]), col=plasma(100) )
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,filt2], aurocs_agg_mat0[,filt]), col=plasma(100), ColSideCol= rep(colpals2[m,10],3) )
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,filt2], aurocs_agg_mat0[,filt]), col=plasma(100), ColSideCol= rep(colpals2[mm,10],3) )
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,filt2], aurocs_agg_mat0[,filt]), col=plasma(100), ColSideCol= rep(colpals2[m,10],3) )
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,filt2], aurocs_agg_mat0[,filt]), col=plasma(100), ColSideCol= rep(colpals2[m,10],3), Colv =F )
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,filt2], aurocs_agg_mat0[,filt]), col=plasma(100), ColSideCol= rep(colpals2[sort(m),10],3), Colv =F )
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,filt2], aurocs_agg_mat0[,filt]), col=plasma(100), ColSideCol= rep(colpals2[m,10],3), Colv =F )
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,filt2], aurocs_agg_mat0[,filt]), col=plasma(100),  Colv =F )
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,fs==15 & filt2],aurocs_agg_mat[,fl2][,fs==19 & filt2], aurocs_agg_mat0[,filt]), col=plasma(100),  Colv =F )
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,fs==15 & filt2],aurocs_agg_mat[,fl2][,fs==19 & filt2], aurocs_agg_mat0[,filt]), col=plasma(100),  Colv =F , ColSideCol= rep(colpals2[m,10],3))
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,fs==15 & filt2],aurocs_agg_mat[,fl2][,fs==19 & filt2], aurocs_agg_mat0[,filt]), col=plasma(100),  ColSideCol= rep(colpals2[m,10],3))
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,fs==15 & filt2],aurocs_agg_mat[,fl2][,fs==19 & filt2], aurocs_agg_mat0[,filt]), col=cols,  ColSideCol= rep(colpals2[m,10],3))
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,fs==15 & filt2],aurocs_agg_mat[,fl2][,fs==19 & filt2], aurocs_agg_mat0[,filt]), col=viridis(100),  ColSideCol= rep(colpals2[m,10],3))
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,fs==15 & filt2],aurocs_agg_mat[,fl2][,fs==19 & filt2], aurocs_agg_mat0[,filt]), col=viridis(100),  ColSideCol= rep(colpals2[m,10],3), symbreaks=T)
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,fs==15 & filt2],aurocs_agg_mat[,fl2][,fs==19 & filt2], aurocs_agg_mat0[,filt]), col=viridis(100),  ColSideCol= rep(colpals2[m,10],3) )
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,fs==15 & filt2],aurocs_agg_mat[,fl2][,fs==19 & filt2], aurocs_agg_mat0[,filt]), col=viridis(100),  ColSideCol= rep(colpals2[m,10],3) , symbreaks=c(0:100)/100)
+heatmap.3(  cbind(aurocs_agg_mat[,fl2][,fs==15 & filt2],aurocs_agg_mat[,fl2][,fs==19 & filt2], aurocs_agg_mat0[,filt]), col=viridis(100),  ColSideCol= rep(colpals2[m,10],3) )
+heatmap.3(  cor(cbind(aurocs_agg_mat[,fl2][,fs==15 & filt2],aurocs_agg_mat[,fl2][,fs==19 & filt2], aurocs_agg_mat0[,filt])) , col=viridis(100),  ColSideCol= rep(colpals2[m,10],3) )
+heatmap.3(  cor(cbind(aurocs_agg_mat[,fl2][,fs==15 & filt2],aurocs_agg_mat[,fl2][,fs==19 & filt2], aurocs_agg_mat0[,filt])) , col=cols,  ColSideCol= rep(colpals2[m,10],3) )
+cols <- colorRampPalette(brewer.pal(11, "PRGn"))(100)
+heatmap.3(  cor(cbind(aurocs_agg_mat[,fl2][,fs==15 & filt2],aurocs_agg_mat[,fl2][,fs==19 & filt2], aurocs_agg_mat0[,filt])) , col=cols,  ColSideCol= rep(colpals2[m,10],3) )
+heatmap.3(  cor(cbind(aurocs_agg_mat[,fl2][,fs==15 & filt2],aurocs_agg_mat[,fl2][,fs==19 & filt2], aurocs_agg_mat0[,filt])) , col=cols,  RowSideCol= rep(colpals2[m,10],3) , ColSideCol = agg_files_sex[ff][filt2]) 
+agg_files_sex = rep( viridis(11)[5], length(agg_files)) 
+agg_files_sex = rep( viridis(11)[5], length(agg_files)) 
+agg_files = rownames(sample.cor)
+sample.cor =  cor(cbind(aurocs_agg_mat[,fl2][,fs==15 & filt2],aurocs_agg_mat[,fl2][,fs==19 & filt2], aurocs_agg_mat0[,filt])) 
+agg_files_sex = rep( viridis(11)[5], dim(sample.cor)[1]) 
+agg_files_sex[grep("\\.1", rownames(sample.cor))] = colsex[1]
+agg_files_sex[grep("\\.2", rownames(sample.cor))] = colsex[2]
+heatmap.3(  sample.cor , col=cols,  RowSideCol= rep(colpals2[m,10],3) , ColSideCol = agg_files_sex) 
+pdf("go_auroc_sim.pdf", height=10, width=10)
+heatmap.3(  sample.cor , col=cols,  RowSideCol= rep(colpals2[m,10],3) , ColSideCol = agg_files_sex) 
+dev.off() 
+savde(sample.cor, agg_files_sex, agg_files_cells, file="data/aurocs_sim.Rdata") 
+ agg_files_cells =  rep(colpals2[m,10],3)
+save(sample.cor, agg_files_sex, agg_files_cells, file="data/aurocs_sim.Rdata") 
+history(100) 
+
+ 
+
+hn = hclust(dist(sample.cor))
+hc = hclust(dist(coexp.cor))
+hf = hclust(dist(func.cor))
+hf2 = cutree( hf , h=3) 
+hn2 = cutree( hn , h=3) 
+hc2 = cutree( hc , h=3) 
+
+
+
+
+    a <- hc2
+    b <- hn2 + max(a)
+    c <- hf2 + max(b)
+
+    a_c <- unique(cbind(a,  viridis( max(a))[a]  ) )
+    b_c <- unique(cbind(b,  viridis( max(hn2))[b-max(a)]   ) )
+    c_c <- unique(cbind(c,  viridis( max(hf2))[c-max(b)]   ) )
+
+
+    b2 <- hn2
+    c2 <- hf2
+
+    temp <- rbind(a_c, b_c, c_c)
+
+
+    nodes <- data.frame( ID=temp[,1],
+                         x = c(rep(1, max(a)), rep(2, max(b)-max(a) ), rep(3, max(c)-max(b)) ),
+                         col= as.character(temp[,2]), stringsAsFactors = FALSE)
+
+
+    temp2  <- data.frame( N1= c(a,b), N2= c(b,c), Value = 1 )
+    freq  <- plyr::count(temp2)
+    edges <- freq[,1:3]
+    edges[,3] <- freq[,4]
+    r <- riverplot::makeRiver( nodes, edges,  node_labels=""    )
+
+
+    rr <- capture.output(plot( r, node_margin = 0, plot_area=1))
+
+
+
+hf2 = cutree( hf , h=4) 
+hn2 = cutree( hn , h=4) 
+hc2 = cutree( hc , h=4) 
+
+
+    a <- hc2
+    b <- hn2 + max(a)
+  
+    a_c <- unique(cbind(a,  viridis( max(a))[a]  ) )
+    b_c <- unique(cbind(b,  viridis( max(hn2))[b-max(a)]   ) )
+ 
+    temp <- rbind(a_c, b_c )
+
+
+    nodes <- data.frame( ID=temp[,1],
+                         x = c(rep(1, max(a)), rep(2, max(b)-max(a)  ) ),
+                         col= as.character(temp[,2]), stringsAsFactors = FALSE)
+
+
+    temp2  <- data.frame( N1= c(a ), N2= c(b ), Value = 1 )
+    freq  <- plyr::count(temp2)
+    edges <- freq[,1:3]
+    edges[,3] <- freq[,4]
+    r <- riverplot::makeRiver( nodes, edges,  node_labels=""    )
+
+
+    rr <- capture.output(plot( r, node_margin = 0, plot_area=1))
+
+
+
+  heatmap.3(coexp.cor , RowSideCol =  viridis( max(a))[a]  )
+ heatmap.3(sample.cor , RowSideCol =  viridis( max(hn2))[b-max(a)] )  
+
+ heatmap.3(func.cor , RowSideCol =  viridis( max(hf2))[c-max(b)]  )
+ 
+
+
+
+
+
+
+
+clust_tree = hclust( dist(sample.cor[ff,ff][filt2,filt2]) , method="ward.D") 
+clust_den = as.dendrogram(clust_tree) 
+clust_phyl = as.phylo(clust_tree) 
+ 
+plot(clust_phyl,  type = "unrooted", tip.color = colpals5[m,12],label.offset = 1, cex = 0.7)
+heatmap.3(sample.cor[ff,ff][filt2,filt2], col=cols, RowSideCol = colpals5[m,12], ColSideCol = agg_files_sex[ff][filt2], Colv=clust_den, Rowv=clust_den) 
+
+ 
+
+
+
+load("../figures_2022_05/data/aurocs_sim.Rdata")
+sample.cor = sample.cor * 0
+agg_cells =  rownames(sample.cor)
+
+load("azimuth_nets_comp.Rdata")
+m = match( agg_cells, gsub(".agg.Rdata", "",  agg_files  )  )
+f.c = !is.na(m)
+f.a = m[f.c]
+sample.cor[f.c,f.c]  = cor_mat[f.a,f.a]
+
+load("azimuth_nets_sex_comp.Rdata")
+m = match( agg_cells, gsub(".agg.Rdata", "",  agg_files  )  )
+f.c = !is.na(m)
+f.a = m[f.c]
+sample.cor[f.c,f.c]  = cor_mat[f.a,f.a]
+
+load("azimuth_nets_sex_comp_cross.Rdata")
+temp = do.call( rbind, strsplit( names(cor_mat), ".agg.Rdata")    )
+temp[,2] = gsub("^ ", "", temp[,2] )
+temp2 = data.frame(temp, cor=unlist(cor_mat))
+library(tidyverse)
+temp3 = spread(temp2, key=2, value=3 )
+match(temp3[,1] , rownames(sample.cor )  )
+m = match(temp3[,1] , rownames(sample.cor )  )
+f.t = !is.na(m)
+f.c = m[f.t]
+
+m = match( colnames(temp3) , rownames(sample.cor )  )
+f.t2 = !is.na(m)
+f.c2 = m[f.t2]
+
+j = 1 
+for(i in f.c2){ 
+    sample.cor[f.c,i] = temp3[f.t,f.t2][,j]
+    j = j + 1 
+} 
+
+
+j = 1 
+for(i in f.c2){ 
+    sample.cor[i,f.c] = temp3[f.t,f.t2][,j]
+    j = j + 1 
+} 
+
+
+
+freqn = freqn[!is.na(freqn[,1])  ,] 
+
+labels = names(regulon_ext.list) 
+labels = gsub("_", " ", labels ) 
+labels[20] =  "NK_CD56bright" 
+
+
+
+temp = list() 
+for( i in 1:length(labels) ) { 
+ celltype = labels[i]
+ n =  freqn[freqn[,1] == celltype,2]
+ celltype = names(regulon_ext.list)[i]
+ temp[[celltype]] = cbind(labels[i], regulon_ext.list[[celltype]]$regulons, regulon_ext.list[[celltype]]$nCellsAssigned/n ) 
+
+
+}
+temp2 = do.call(rbind, temp  ) 
+temp2 = as.data.frame(temp2) 
+
+temp3 = spread(temp2, key=2, value=3, fill=0 ) 
+ 
+
+
+
+
+
+
+
+
+
+files = dir() 
+ 
+aurocs_list = list() 
+for(file in files){
+    load(file)
+    aurocs_list[[file]] = aurocs_GOslim
+}
+
+
+
+a = sapply(1:length(aurocs_list), function(i) dim(aurocs_list[[i]])[1] )
+
+ 
+aurocs_temp = list() 
+for( i in which(a==104) ){ 
+   m = match(rownames(aurocs_list[[i]]) , rownames(aurocs_list[[691]]) )
+   aurocs_temp[[i]] = aurocs_list[[i]][!is.na(m),1]
+}
+
+for( i in which(a==103) ){ 
+   m = match(rownames(aurocs_list[[i]]) , rownames(aurocs_list[[691]]) )
+   aurocs_temp[[i]] = aurocs_list[[i]][!is.na(m),1]
+}
+
+aurocs_mat = do.call(cbind, aurocs_temp)
+aurocs_mat = t(aurocs_mat)
+
+temp = do.call(rbind, strsplit(files, "\\.")  )
+
+rownames(aurocs_mat) = temp[,3]
+
+temp2 = do.call(rbind, strsplit(files, "\\.")  )
+load("../../../../indiv_meta.Rdata")
+load("../../../../phens.Rdata")
+
+m = match( temp2[,3] , phens[,2])
+phens = phens[m,]
+
+m = match(temp2[,3], temp[,2])
+temp = temp[m,]
+
+aurocs_mat_expand = cbind(phens,   temp[,3], rowMeans(aurocs_mat), aurocs_mat )
+ colnames(aurocs_mat_expand)[5]  = "ncells"
+  colnames(aurocs_mat_expand)[6]  = "meanGO"
+rownames(aurocs_mat_expand) = phens[,2] 
+
+save(aurocs_mat_expand, aurocs_list, files,  file="../aurocs_goslim.Rdata")
+
+
+
+
+
+
+
+
+
+
+
+load("~/workspace/projects/onek1k/genes_freqs.Rdata")
+  genes_common = genes_freq[genes_freq[,2] == 75,1]
+
+files = dir()
+load("../../../phens.Rdata")
+males = phens[phens[,4] == "1",]
+females = phens[phens[,4] == "2",]
+temp  = do.call(rbind, strsplit( files, "\\.") )
+male_files = files[match( males[,2], temp[,3] )]
+female_files = files[match( females[,2], temp[,3] )]
+
+
+agg = diag( length(genes_common )) 
+diag(agg) = 0
+bottom = row(agg) > col(agg)
+aggr = agg[bottom]
+
+i = 1 
+for(file in male_files){ 
+        load(file)
+        print(c(i, file))
+
+        net = diag( length(genes_net ))
+        diag(net) = 0
+        bottom = row(net) > col(net)
+        net[bottom] = ranked_net
+        net = net + t(net)
+        diag(net) = 1
+        rownames(net) = genes_net
+        colnames(net) = genes_net
+        medK = median(net,na.rm = T)
+        net[is.na(net)] = medK
+        nd = rowSums(net)
+      
+        m = match( genes_common, genes_net)
+        f.c = !is.na(m)
+     
+        net = net[m,m]
+        bottom = row(net) > col(net)
+        temp = frank(net[bottom]) 
+        temp = temp/max(temp, na.rm=T)
+        temp[is.na(temp)] = 0.5
+        
+        aggr = aggr + temp 
+        
+        net = net * 0 
+        net[bottom] = temp 
+        net = net + t(net)
+        diag(net) = 1
+        nd_sub = rowSums(net)
+
+        save(nd, nd_sub, file=paste0("../test_net/node_degree_", gsub("net.","",file)) ) 
+
+        i = i + 1 
+        if( i %% 10  == 0 ) { save(aggr, file="temp_agg2.Rdata")}
+        rm(net, genes_net, ranked_net, bottom, temp)
+
+}
+aggn = aggr 
+temp = frank(aggr)
+aggr = temp/max(temp, na.rm=T)
+save(aggr,genes_common,file="../indv_agg/male_ranked_agg.Rdata")
+save(aggn,genes_common,file="../indv_agg/male_agg.Rdata")
+
+
+
+
+aggn = diag( length(genes_common )) 
+diag(aggn) = 0
+bottom = row(aggn) > col(aggn)
+aggn[bottom] = aggr 
+aggn = aggn + t(aggn)
+diag(aggn) = 1 
+rownames(aggn) = genes_common
+colnames(aggn) = genes_common
+
+ 
+medK = median(aggn,na.rm = T)
+aggn[is.na(aggn)] = medK
+temp <- run_GBA(aggn, go_slim)
+aurocs_GOslim = temp[[1]]
+print(temp[[3]] )
+save(aurocs_GOslim,   file=paste0("../indv_agg/male_ranked_agg.aurocs.Rdata", sep="."))
+
+
+
+
+genes_common
+
+      load(filenet)
+        net = diag( length(genes_net ))
+        diag(net) = 0
+        bottom = row(net) > col(net)
+        net[bottom] = ranked_net
+        net = net + t(net)
+        diag(net) = 1
+        rownames(net) = genes_net
+        colnames(net) = genes_net
+        medK = median(net,na.rm = T)
+        net[is.na(net)] = medK
+ 
+
+agg = diag( length(genes_common )) 
+diag(agg) = 0
+bottom = row(agg) > col(agg)
+aggr = agg[bottom]
+
+i = 1 
+for(file in female_files[-1]){ 
+        load(file)
+        print(c(i, file))
+
+        net = diag( length(genes_net ))
+        diag(net) = 0
+        bottom = row(net) > col(net)
+        net[bottom] = ranked_net
+        net = net + t(net)
+        diag(net) = 1
+        rownames(net) = genes_net
+        colnames(net) = genes_net
+        medK = median(net,na.rm = T)
+        net[is.na(net)] = medK
+        nd = rowSums(net)
+      
+        m = match( genes_common, genes_net)
+        f.c = !is.na(m)
+     
+        net = net[m,m]
+        bottom = row(net) > col(net)
+        temp = frank(net[bottom]) 
+        temp = temp/max(temp, na.rm=T)
+        temp[is.na(temp)] = 0.5
+        
+        aggr = aggr + temp 
+        
+        net = net * 0 
+        net[bottom] = temp 
+        net = net + t(net)
+        diag(net) = 1
+        nd_sub = rowSums(net)
+
+        save(nd, nd_sub, file=paste0("../test_net/node_degree_", gsub("net.","",file)) ) 
+
+        i = i + 1 
+        if( i %% 10  == 0 ) { save(aggr, file="temp_agg2.Rdata")}
+        rm(net, genes_net, ranked_net, bottom, temp)
+
+}
+#save(aggr, file="../indv_agg/female_agg.Rdata")
+
+aggn = aggr 
+temp = frank(aggr)
+aggr = temp/max(temp, na.rm=T)
+save(aggr,genes_common,file="../indv_agg/female_ranked_agg.Rdata")
+save(aggn,genes_common,file="../indv_agg/female_agg.Rdata")
+
+
+
+aggn = diag( length(genes_common )) 
+diag(aggn) = 0
+bottom = row(aggn) > col(aggn)
+aggn[bottom] = aggr 
+aggn = aggn + t(aggn)
+diag(aggn) = 1 
+rownames(aggn) = genes_common
+colnames(aggn) = genes_common
+
+ 
+medK = median(aggn,na.rm = T)
+aggn[is.na(aggn)] = medK
+temp <- run_GBA(aggn, go_slim)
+aurocs_GOslim = temp[[1]]
+print(temp[[3]] )
+
+save(aurocs_GOslim,   file=paste0("../indv_agg/female_ranked_agg.aurocs.Rdata", sep="."))

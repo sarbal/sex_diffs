@@ -1,0 +1,188 @@
+# Figure 5 panels 
+
+## Panel A 
+ 
+load("data/eqtls_so_far.Rdata")
+load("data/palette2.Rdata")
+source("V:/bin/helper.r")
+sbgenes = unique(sb_cis[,2])
+func <- function(x) { length(unique(x))}
+
+
+skip = c("Eryth", "Platelet", "HSPC", "ILC", "CD4 Proliferating", "CD8 Proliferating")
+filt = is.na(match(eqtls[,1] , skip))
+eqtls = eqtls[filt,]
+
+filt = is.na(match(sb_cis[,1] , skip))
+sb_cis = sb_cis[filt,]
+
+filt = is.na(match(chrxeqtls[,1] , skip))
+chrxeqtls = chrxeqtls[filt,]
+
+filt = is.na(match(male_eqtls[,1] , skip))
+male_eqtls = male_eqtls[filt,]
+
+filt = is.na(match(female_eqtls[,1] , skip))
+female_eqtls = female_eqtls[filt,]
+
+
+
+
+alleqtls = rbind(eqtls, chrxeqtls) 
+alleqtls = alleqtls[(alleqtls$Chromosome !=""),] 
+
+esnps = plyr::count(alleqtls[,1]) 
+egenes = tapply( alleqtls[,2], alleqtls[,1], func)
+ 
+esnps_sb = plyr::count(sb_cis[,1]) 
+egenes_sb = tapply( sb_cis[,2], sb_cis[,1], func)
+ 
+temp = gsub("_", " ", names(egenes))
+temp = gsub("NK CD", "NK_CD", temp)
+
+m = match(colpals2[,9], temp)
+f.c = !is.na(m)
+f.t = m[f.c]
+
+esnps_female = plyr::count(female_eqtls[,1]) 
+egenes_female = tapply( female_eqtls[,3], female_eqtls[,1], func)
+
+esnps_male = plyr::count(male_eqtls[,1]) 
+egenes_male = tapply( male_eqtls[,3], male_eqtls[,1], func)
+
+
+temp = plyr::count( cbind(alleqtls$Chromosome, alleqtls$cell_type) )
+chrmat_snp = spread(temp, key="x.2", value="freq") 
+chrmat_snp[is.na(chrmat_snp)] = 0 
+
+temp = plyr::count( unique(cbind(alleqtls$Chromosome, alleqtls$cell_type, alleqtls$GeneID))[,1:2] )
+chrmat_gene = spread(temp, key="x.2", value="freq") 
+chrmat_gene[is.na(chrmat_gene)] = 0 
+
+
+chrmat_snp[chrmat_snp[,1] == "X",1] = 23 
+chrmat_gene[chrmat_gene[,1] == "X",1] = 23
+
+
+
+# Joint analysis 
+pdf("joint_analysis_eqtls.pdf")
+par(mfrow=c(1,2))
+barplot(esnps[f.t,2], hor=T, col = colpals2[f.c,10], xlab="Number of eSNPs", border = NA)
+barplot(egenes[f.t], hor=T, col = colpals2[f.c,10], xlab="Number of egenes", border = NA)
+dev.off() 
+
+
+# Stratified analysis 
+pdf("female_analysis_eqtls.pdf")
+par(mfrow=c(1,2))
+barplot(esnps_female[f.t,2], hor=T, col = colpals2[f.c,10], xlab="Number of eSNPs", border = NA)
+barplot(egenes_female[f.t], hor=T, col = colpals2[f.c,10], xlab="Number of egenes", border = NA)
+dev.off() 
+
+pdf("male_analysis_eqtls.pdf")
+par(mfrow=c(1,2))
+barplot(esnps_male[f.t,2], hor=T, col = colpals2[f.c,10], xlab="Number of eSNPs", border = NA)
+barplot(egenes_male[f.t], hor=T, col = colpals2[f.c,10], xlab="Number of egenes", border = NA)
+dev.off() 
+
+
+
+
+
+
+## Panel B 
+
+# Sex-biased eqtls 
+pdf("sb_eqtls.pdf")
+par(mfrow=c(1,2))
+barplot(esnps_sb[f.t2,2], hor=T, col = colpals2[f.c2,10], xlab="Number of eSNPs", border = NA)
+barplot(egenes_sb[f.t2], hor=T, col = colpals2[f.c2,10], xlab="Number of egenes", border = NA)
+dev.off() 
+
+
+ 
+freqx = plyr::count(chrxeqtls[,2])
+chrxgenes = freqx[freqx[,2] > 2,1]
+
+
+
+## Panel C
+### Chrm X genes - upset plot 
+  
+  
+temp = unique(cbind(chrxeqtls$cell_type, chrxeqtls$GeneID ))
+egenerecur = plyr::count(temp[,2]) 
+
+colnames(temp)  = c("celltype", "gene")
+temp = as.data.frame(temp)
+temp[,3] = 1
+temp2  = spread(temp, key="gene", value=3, fill=0)
+temp3 = temp2[,-1 ]
+temp3 = apply(temp3, 2, as.numeric)
+rownames(temp3) = temp2[,1]
+
+temp2[,1] = gsub("_", " ", temp2[,1])
+temp2[,1] = gsub("NK CD", "NK_CD", temp2[,1])
+
+m = match(colpals2[,9], temp2[,1])
+f.c = !is.na(m)
+f.t = m[f.c]
+
+o = order(colSums(temp3)) 
+z = temp3[f.t, rev(o)] 
+nt = dim(z)[1]
+ng = dim(z)[2]
+
+
+  pdf("xchrmgenes_recur_upset.pdf", width=20, height=10) 
+
+  par(oma = c(3, 3, 1, 1))
+  xyrange <- c(floor(min(c(z))), ceiling(max(c(z))))
+  zones <- matrix(c(2, 0, 1, 3), ncol = 2, byrow = TRUE)
+  layout(zones, widths = c(4/5, 1/5), heights = c(2.5/5, 2.5/5))
+  yhist <- rowSums(z) 
+  xhist <- colSums(z)
+   
+  top <- max(c(xhist, yhist))
+  # Plot main scatter
+  par(mar = c(0, 0, 1, 0))
+  plot(0,0, xlim=c(0,ng), ylim=c(0,nt), col=0, axes=F, xlab=" ", ylab="")
+   
+  for(i in 1:nt){ points( 1:ng, rep(i,ng),  cex=1, pch=19, col= "grey" ) } 
+  
+  
+  for(i in 1:ng){ segments( i, min(which((z[,i])==1) ) , i,  max(which((z[,i])==1) ) ) }
+  for(i in 1:nt){ points( 1:ng, rep(i,ng),  cex=z[i,]*2, pch=19, col=colpals2[f.c,10][i]) } 
+  # for(i in 1:nt){ points( 1:ng, rep(i,ng),  cex=z[i,]*2, pch=19, col=z[i,]) } 
+
+  # Plot x-axis histogram
+  par(mar = c(0, 0.5, 1, 0))
+  bp = barplot(xhist, names=NA, border=NA, col="darkgray", main="Genes") 
+  text(bp, xhist, names(xhist), srt=45,   cex=1, xpd=T)
+  
+  # Plot y-axis histogram
+  par(mar = c(1, 0, 0, 1))
+  bp= barplot(yhist, horiz = T, col=colpals2[f.c,10], border=NA, space = 0, names=NA, main="Cell-types") 
+  text(45, bp, names(yhist), cex=1, xpd=T, adj=1)
+  
+  
+  dev.off() 
+  
+ 
+
+
+#### 
+
+
+## Panel D
+pdf("sex_biased_eqtls_vln_plots.pdf", width=15)
+VlnPlot(temp, features=sbgenes, stack=T, group.by = "predicted.celltype.l3", split.by = "sex" , col=colsex, pt.size=0)     
+dev.off() 
+
+
+pdf("vln_chrxrec_unique.pdf", width=15)
+VlnPlot(temp, features= chrxgenes, stack=T, group.by = "predicted.celltype.l3", split.by = "sex" , col=colsex, pt.size=0)     
+dev.off() 
+
+ 
