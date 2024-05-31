@@ -1,3 +1,147 @@
 # Figure 3: Sex-differential expression.
 
 
+
+
+## 
+source("helper.r")
+exprs_dir = "cellranger_outs/"
+out_dir = "markerDE/"
+load("metadata.Rdata") 
+setwd(exprs_dir)
+
+ni = 1 
+annotf.list = list() 
+annotm.list = list() 
+annot.list = list() 
+
+
+for(ni in c(1:77)){ 
+  print(ni)
+   load(files[ni])
+    barcodes = colnames(data)
+    genes = rownames(data)
+    pool = gsub("Sample", "pool_", sample )
+    umis = substr( rownames(metadata)[which(metadata$pool == pool)], 0, 16)
+    sex  = metadata$sex[which(metadata$pool == pool)]    
+    indv =  metadata$individual[which(metadata$pool == pool)]
+    cell_type =   metadata$predicted.celltype.l3[which(metadata$pool == pool)]
+    m = match(umis, barcodes)
+    fu = !is.na(m)
+    fd = m[fu]
+    data = data[,fd]
+    cell_type = cell_type[fu]
+		indv = indv[fu]
+    sex = sex[fu]
+    umis = umis[fu]
+    meta = data.frame( sex, cell_type, indv)
+    rownames(meta) = umis
+
+    acells <- CreateSeuratObject(counts = data, project = "onek1k_coexp",  min.cells = 3, min.features = 200, meta.data = meta)
+    acells[["percent.mt"]] <- PercentageFeatureSet(acells, pattern = "^MT-")
+    acells <- NormalizeData(acells, normalization.method = "LogNormalize", scale.factor = 10000)
+    all.genes <- rownames(acells)
+    acells <- ScaleData(acells, features = all.genes)
+    
+    acells@active.ident = factor(acells$cell_type) 
+    filtf = acells$sex == 2 
+    filtm = acells$sex == 1 
+    
+    all.markers_female <- FindAllMarkers(acells[,filtf], only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, )
+    all.markers_male <- FindAllMarkers(acells[,filtm], only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, )
+    all.markers <- FindAllMarkers(acells[, ], only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, )
+
+
+    save(all.markers,all.markers_female,all.markers_male,  file=paste0(out_dir, pool, ".sex_markers.Rdata"))
+     rm(acells)
+   }
+
+   annotf =  make_annotations( all.markers_female[,c(7,6)], unique(all.markers_female$gene),  unique(all.markers_female$cluster) )
+   annotf.list[[ni]] = annotf
+	 annotm =  make_annotations( all.markers_male[,c(7,6)], unique(all.markers_male$gene),  unique(all.markers_male$cluster) )
+   annotm.list[[ni]] = annotm
+   annot =  make_annotations( all.markers[,c(7,6)], unique(all.markers$gene),  unique(all.markers$cluster) )
+   annot.list[[ni]] = annot
+    
+}
+
+files = grep("sex", dir() , val=T)
+annotf = list() 
+annotm = list() 
+annot = list() 
+
+for(file in files){
+	  temp =  gsub(".sex_markers.Rdata", "", file)
+		load(file)
+		annotf[[file]] = cbind(all.markers_female[all.markers_female$p_val_adj < 0.05,c(7,6)], temp)
+		annotm[[file]] = cbind(all.markers_male[all.markers_male$p_val_adj < 0.05,c(7,6)], temp)
+		annot[[file]] = cbind(all.markers[all.markers$p_val_adj < 0.05,c(7,6)], temp)
+
+} 
+
+f_mat = do.call(rbind,annotf)
+m_mat = do.call(rbind,annotm)
+a_mat = do.call(rbind,annot)
+
+
+ test_a = tapply(a_mat[,1], a_mat[,2], plyr::count )
+ test_f = tapply(f_mat[,1], f_mat[,2], plyr::count )
+ test_m = tapply(m_mat[,1], m_mat[,2], plyr::count )
+
+test_f2 = do.call(rbind, test_f)
+test_m2 = do.call(rbind, test_m)
+test_a2 = do.call(rbind, test_a)
+
+ f2 = do.call(rbind, strsplit(rownames(test_f2), "\\." ) )[,1]
+ m2 = do.call(rbind, strsplit(rownames(test_m2), "\\." ) )[,1]
+ a2 = do.call(rbind, strsplit(rownames(test_a2), "\\." ) )[,1]
+
+test_f3 = cbind(f2,test_f2) 
+test_m3 = cbind(m2,test_m2) 
+test_a3 = cbind(a2,test_a2) 
+
+nnn = 60
+freq_f = test_f3[test_f3[,3] >= nnn ,]
+freq_m = test_m3[test_m3[,3] >= nnn ,]
+freq_a = test_a3[test_a3[,3] >= nnn,]
+
+
+annot_f = spread( freq_f, key=1, value=3, fill=0)
+annot_m = spread( freq_m, key=1, value=3, fill=0)
+annot_a = spread( freq_a, key=1, value=3, fill=0)
+
+
+ 
+rownames(annot_f) = annot_f[,1]
+rownames(annot_m) = annot_m[,1]
+rownames(annot_a) = annot_a[,1]
+ 
+annot_a2 = (annot_a[,-1]>0) * 1
+annot_f2 = (annot_f[,-1]>0) * 1
+annot_m2 = (annot_m[,-1]>0) * 1
+ 
+
+nnn = 75
+freq_f = test_f3[test_f3[,3] >= nnn ,]
+freq_m = test_m3[test_m3[,3] >= nnn ,]
+freq_a = test_a3[test_a3[,3] >= nnn,]
+
+
+
+
+load("annotations/annots_az.Rdata")
+maz.voc =   cbind(colnames(annots_az),  colSums(annots_az), c(rep("findmarkers", 23), rep("azim", 31)) ) 
+
+enrich.marker.c3 = lapply(1:dim(annots_az)[2], function(i) gene_set_enrichment(rownames(annots_az)[annots_az[,i]>0],  annotsc3,  c3.voc   ))
+enrich.marker.c2 = lapply(1:dim(annots_az)[2], function(i) gene_set_enrichment(rownames(annots_az)[annots_az[,i]>0],  annotsc2,  c2.voc   ))
+enrich.marker.c7 = lapply(1:dim(annots_az)[2], function(i) gene_set_enrichment(rownames(annots_az)[annots_az[,i]>0],  annotsc7,  c7.voc   ))
+enrich.marker.h = lapply(1:dim(annots_az)[2], function(i) gene_set_enrichment(rownames(annots_az)[annots_az[,i]>0],  annotsh,  h.voc   ))
+
+load(file="immport.Rdata")
+enrich.marker.immp = lapply(1:dim(annots_az)[2], function(i) gene_set_enrichment(rownames(annots_az)[annots_az[,i]>0],  annots,  voc   ))
+
+load("annotations/annots_hgnc.Rdata")
+enrich.marker.hgnc = lapply(1:dim(annots_az)[2], function(i) gene_set_enrichment(rownames(annots_az)[annots_az[,i]>0],  annots,  voc   ))
+
+save(enrich.marker.immp,enrich.marker.hgnc, enrich.marker.c3,  enrich.marker.c2, enrich.marker.c7 ,  enrich.marker.h,  maz.voc,  file="enrich.markers.Rdata")
+ 
