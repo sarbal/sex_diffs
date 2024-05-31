@@ -79,4 +79,578 @@ pdf("vln_chrxrec_unique.pdf", width=15)
 VlnPlot(temp, features= chrxgenes, stack=T, group.by = "predicted.celltype.l3", split.by = "sex" , col=colsex, pt.size=0)     
 dev.off() 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+colsex = c("#F7A51D","#671D5B","#2C788F")
  
+files = dir() 
+
+library(vioplot)
+
+for(file in files){ 
+  print(file)
+  res = read.table(file, header=T)
+  pdffile = gsub(".tsv", ".pdf", file)
+  pdf(pdffile, width=20, height=16)
+  celltypes = sort(unique(res$cellType) )
+  ff = res$sex == "female" 
+  fm = res$sex == "male" 
+    par(mfrow=c(7,9) ) 
+  for(celltypei in celltypes)  { 
+      #par(mfrow=c(1,3) ) 
+      fc = res$cellType == celltypei   
+
+      
+
+      zlm = lm(res$expression[fc] ~  as.numeric(as.factor(res$genotype[fc])) )
+      zlmf = lm(res$expression[fc & ff] ~  as.numeric(as.factor(res$genotype[fc & ff]) ))
+      zlmm = lm(res$expression[fc & fm] ~  as.numeric(as.factor(res$genotype[fc & fm]) ))
+      yrange = range(res$expression[fc]) 
+
+      vioplot(res$expression[fc] ~ res$genotype[fc], ylim=yrange, main=celltypei, xlab="Genotype", ylab="Residual", border= (1) , col=0, colMed = c(1), rectCol= (1) , lineCol= (1)) 
+      abline(zlm, lwd=2)
+      vioplot(res$expression[fc & ff] ~ res$genotype[fc & ff], main="female", ylim=yrange,  xlab="Genotype", ylab="Residual" ,border= (colsex[2]) , col=0, colMed = c(colsex[2]), rectCol= (colsex[2]) , lineCol= (colsex[2]))  
+      abline(zlmf, col=colsex[2], lwd=2)
+      vioplot(res$expression[fc & fm] ~ res$genotype[fc & fm], main="male", ylim=yrange,   xlab="Genotype", ylab="Residual", border= (colsex[1]) , col=0, colMed = c(colsex[1]), rectCol= (colsex[1]) , lineCol= (colsex[1]))   
+      abline(zlmm, col=colsex[1], lwd=2)
+  }
+    dev.off() 
+
+}
+
+
+
+colsex = c("#F7A51D","#671D5B","#2C788F")
+ 
+sbs = read.table("sb_cis_eQTLs_at_25perc_fdr_20220928.tsv", header=T ) 
+ 
+pdffile = "sb_cis_eQTLs_at_25perc_fdr_20220928.pdf"
+
+
+pdf(pdffile, width=8, height=5)
+  
+for(j in 1:length(sbs[,1]) ){ 
+  #if( j == 28) { next; } 
+  if( j == 44) { next; }
+  if( j == 51) { next; }
+
+  file = grep( sbs[j,2], files, val=T) 
+
+  res = read.table(file, header=T)
+  celltypes = sort(unique(res$cellType) )
+  ff = res$sex == "female" 
+  fm = res$sex == "male" 
+  #  par(mfrow=c(7,9) ) 
+  celltypei = sbs[j,1] 
+  rsid = strsplit(file, "_")[[1]][2]
+  geneid =  strsplit(file, "_")[[1]][1]
+   par(mfrow=c(1,3) ) 
+   fc = res$cellType == celltypei   
+   zlm = lm(res$expression[fc] ~  as.numeric(as.factor(res$genotype[fc])) )
+   zlmf = lm(res$expression[fc & ff] ~  as.numeric(as.factor(res$genotype[fc & ff]) ))
+   zlmm = lm(res$expression[fc & fm] ~  as.numeric(as.factor(res$genotype[fc & fm]) ))
+   yrange = range(res$expression[fc]) 
+
+   vioplot(res$expression[fc] ~ res$genotype[fc], ylim=yrange, main=paste( celltypei ,  geneid, rsid), xlab="Genotype", ylab="Residual", border= (1) , col=0, colMed = c(1), rectCol= make_transparent(1) , lineCol= (1)) 
+   abline(zlm, lwd=2)
+   vioplot(res$expression[fc & ff] ~ res$genotype[fc & ff], main="female", ylim=yrange,  xlab="Genotype", ylab="Residual" ,border= (colsex[2]) , col=0, colMed = c(colsex[2]), rectCol= make_transparent(colsex[2]) , lineCol= (colsex[2]))  
+   abline(zlmf, col=colsex[2], lwd=2)
+   vioplot(res$expression[fc & fm] ~ res$genotype[fc & fm], main="male", ylim=yrange,   xlab="Genotype", ylab="Residual", border= (colsex[1]) , col=0, colMed = c(colsex[1]), rectCol= make_transparent(colsex[1]) , lineCol= (colsex[1]))   
+   abline(zlmm, col=colsex[1], lwd=2)
+
+
+}
+ 
+    dev.off() 
+
+
+pdffile = "sb_cis_eQTLs_at_25perc_fdr_20220928_missing.pdf"
+pdf(pdffile, width=8, height=5)
+
+j = 28 
+file = grep( sbs[j,2], files, val=T) 
+
+
+j = 44 
+file = grep( sbs[j,2], files, val=T) [1] 
+file = grep( sbs[j,2], files, val=T) [2] 
+
+j = 51 
+file = grep( sbs[j,2], files, val=T) [1] 
+file = grep( sbs[j,2], files, val=T) [2] 
+
+
+  res = read.table(file, header=T)
+  celltypes = sort(unique(res$cellType) )
+  ff = res$sex == "female" 
+  fm = res$sex == "male" 
+  celltypei = sbs[j,1] 
+  rsid = strsplit(file, "_")[[1]][2]
+  geneid =  strsplit(file, "_")[[1]][1]
+
+   par(mfrow=c(1,3) ) 
+   fc = res$cellType == celltypei   
+   zlm = lm(res$expression[fc] ~  as.numeric(as.factor(res$genotype[fc])) )
+   zlmf = lm(res$expression[fc & ff] ~  as.numeric(as.factor(res$genotype[fc & ff]) ))
+   zlmm = lm(res$expression[fc & fm] ~  as.numeric(as.factor(res$genotype[fc & fm]) ))
+   yrange = range(res$expression[fc]) 
+
+   vioplot(res$expression[fc] ~ res$genotype[fc], ylim=yrange, main=paste( celltypei ,  geneid, rsid), xlab="Genotype", ylab="Residual", border= (1) , col=0, colMed = c(1), rectCol= make_transparent(1) , lineCol= (1)) 
+    abline(zlm, lwd=2)
+   vioplot(res$expression[fc & ff] ~ res$genotype[fc & ff], main="female", ylim=yrange,  xlab="Genotype", ylab="Residual" ,border= (colsex[2]) , col=0, colMed = c(colsex[2]), rectCol= make_transparent(colsex[2]) , lineCol= (colsex[2]))  
+   abline(zlmf, col=colsex[2], lwd=2)
+   vioplot(res$expression[fc & fm] ~ res$genotype[fc & fm], main="male", ylim=yrange,   xlab="Genotype", ylab="Residual", border= (colsex[1]) , col=0, colMed = c(colsex[1]), rectCol= make_transparent(colsex[1]) , lineCol= (colsex[1]))   
+   abline(zlmm, col=colsex[1], lwd=2)
+
+
+dev.off() 
+
+
+
+
+  file = grep( sbs[j,2], files, val=T) 
+
+  res = read.table(file, header=T)
+  celltypes = sort(unique(res$cellType) )
+  ff = res$sex == "female" 
+  fm = res$sex == "male" 
+  celltypei = sbs[j,1] 
+
+   par(mfrow=c(1,3) ) 
+   fc = res$cellType == celltypei   
+   zlm = lm(res$expression[fc] ~  as.numeric(as.factor(res$genotype[fc])) )
+   zlmf = lm(res$expression[fc & ff] ~  as.numeric(as.factor(res$genotype[fc & ff]) ))
+   zlmm = lm(res$expression[fc & fm] ~  as.numeric(as.factor(res$genotype[fc & fm]) ))
+   yrange = range(res$expression[fc]) 
+
+   boxplot(res$expression[fc] ~ res$genotype[fc], ylim=yrange, main=paste( celltypei , sbs[j,2]), xlab="Genotype", ylab="Residual", border= (1) , col=0, colMed = c(1), rectCol= make_transparent(1) , lineCol= (1)) 
+   abline(zlm, lwd=2)
+   boxplot(res$expression[fc & ff] ~ res$genotype[fc & ff], main="female", ylim=yrange,  xlab="Genotype", ylab="Residual" ,border= (colsex[2]) , col=0, colMed = c(colsex[2]), rectCol= make_transparent(colsex[2]) , lineCol= (colsex[2]))  
+   abline(zlmf, col=colsex[2], lwd=2)
+   boxplot(res$expression[fc & fm] ~ res$genotype[fc & fm], main="male", ylim=yrange,   xlab="Genotype", ylab="Residual", border= (colsex[1]) , col=0, colMed = c(colsex[1]), rectCol= make_transparent(colsex[1]) , lineCol= (colsex[1]))   
+   abline(zlmm, col=colsex[1], lwd=2)
+
+
+   par(mfrow=c(1,3) ) 
+   fc = res$cellType == celltypei   
+   zlm = lm(res$expression[fc] ~  as.numeric(as.factor(res$genotype[fc])) )
+   zlmf = lm(res$expression[fc & ff] ~  as.numeric(as.factor(res$genotype[fc & ff]) ))
+   zlmm = lm(res$expression[fc & fm] ~  as.numeric(as.factor(res$genotype[fc & fm]) ))
+   yrange = range(res$expression[fc]) 
+
+   beeswarm(res$expression[fc] ~ res$genotype[fc], ylim=yrange, main=paste( celltypei , sbs[j,2]), xlab="Genotype", ylab="Residual", border= (1) , col=colsex[3], colMed = c(1), rectCol= make_transparent(1) , lineCol= (1)) 
+   abline(zlm, lwd=2)
+   beeswarm(res$expression[fc & ff] ~ res$genotype[fc & ff], main="female", ylim=yrange,  xlab="Genotype", ylab="Residual" ,border= (colsex[2]) , col=colsex[2], colMed = c(colsex[2]), rectCol= make_transparent(colsex[2]) , lineCol= (colsex[2]))  
+   abline(zlmf, col=colsex[2], lwd=2)
+   beeswarm(res$expression[fc & fm] ~ res$genotype[fc & fm], main="male", ylim=yrange,   xlab="Genotype", ylab="Residual", border= (colsex[1]) , col=colsex[1], colMed = c(colsex[1]), rectCol= make_transparent(colsex[1]) , lineCol= (colsex[1]))   
+   abline(zlmm, col=colsex[1], lwd=2)
+
+
+
+
+
+  temp = do.call(rbind, strsplit(file, "_")  ) 
+
+  genename = temp[ ,1] 
+  rsid = temp[ ,2] 
+  #celltypei = sbs[j,1]
+  
+  par(mfrow=c(1,3))
+
+  ggplot(res[fc,], aes(x = genotype, y = expression, color=cellType)) + geom_violin(trim=FALSE) + #geom_bar(stat = "identity") + 
+  geom_boxplot(width=0.1, outlier.size = 0.5, fill="white") +
+  facet_wrap(~ cellType, scales = "free", nrow=2) + 
+  theme_classic() +
+  #scale_color_manual(values=colsex[1], drop=FALSE) +
+  theme(legend.position='none',
+  strip.background = element_blank(),
+  plot.title = element_text(hjust = 0.5)) +
+  geom_smooth(aes(group=cellType), method="lm", fullrange=T, color="red",size=0.5, se=FALSE) +
+  labs(title=paste0(genename,"(",rsid,")"))
+
+
+  ggplot(res[fc&fm,], aes(x = genotype, y = expression, color=cellType)) + geom_violin(trim=FALSE) + #geom_bar(stat = "identity") + 
+  geom_boxplot(width=0.1, outlier.size = 0.5, fill="white") +
+  facet_wrap(~ cellType, scales = "free", nrow=2) + 
+  theme_classic() +
+  #scale_color_manual(values=colsex[1], drop=FALSE) +
+  theme(legend.position='none',
+  strip.background = element_blank(),
+  plot.title = element_text(hjust = 0.5)) +
+  # strip.text.x = element_blank(),
+  #axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5)) +
+  geom_smooth(aes(group=cellType), method="lm", fullrange=T, color="red",size=0.5, se=FALSE) +
+  labs(title=paste0(genename,"(",rsid,")"))
+
+
+
+  ggplot(res[fc&ff,], aes(x = genotype, y = expression, color=cellType)) + geom_violin(trim=FALSE) + #geom_bar(stat = "identity") + 
+  geom_boxplot(width=0.1, outlier.size = 0.5, fill="white") +
+  facet_wrap(~ cellType, scales = "free", nrow=2) + 
+  theme_classic() +
+  #scale_color_manual(values=colsex[1], drop=FALSE) +
+  theme(legend.position='none',
+  strip.background = element_blank(),
+  plot.title = element_text(hjust = 0.5)) +
+  # strip.text.x = element_blank(),
+  #axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5)) +
+  geom_smooth(aes(group=cellType), method="lm", fullrange=T, color="red",size=0.5, se=FALSE) +
+  labs(title=paste0(genename,"(",rsid,")"))
+
+
+
+
+  ggplot(res, aes(x = genotype, y = expression, color=cellType)) + geom_violin(trim=FALSE) + #geom_bar(stat = "identity") + 
+  geom_boxplot(width=0.1, outlier.size = 0.5, fill="white") +
+  facet_wrap(~ cellType, scales = "free", nrow=2) + 
+  theme_classic() +
+  #scale_color_manual(values=colsex[1], drop=FALSE) +
+  theme(legend.position='none',
+  strip.background = element_blank(),
+  plot.title = element_text(hjust = 0.5)) +
+  # strip.text.x = element_blank(),
+  #axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5)) +
+  geom_smooth(aes(group=cellType), method="lm", fullrange=T, color="red",size=0.5, se=FALSE) +
+  labs(title=paste0(genename,"(",rsid,")"))
+
+
+
+
+
+  file = grep( sbs[j,2], files, val=T) 
+
+  res = read.table(file, header=T)
+  celltypes = sort(unique(res$cellType) )
+  ff = res$sex == "female" 
+  fm = res$sex == "male" 
+  celltypei = sbs[j,1] 
+  rsid = strsplit(file, "_")[[1]][2]
+  geneid =  strsplit(file, "_")[[1]][1]
+   par(mfrow=c(1,3) ) 
+   fc = res$cellType == celltypei   
+   zlm = lm(res$expression[fc] ~  as.numeric(as.factor(res$genotype[fc])) )
+   zlmf = lm(res$expression[fc & ff] ~  as.numeric(as.factor(res$genotype[fc & ff]) ))
+   zlmm = lm(res$expression[fc & fm] ~  as.numeric(as.factor(res$genotype[fc & fm]) ))
+   yrange = range(res$expression[fc]) 
+
+ temp3 =  cbind( cor(res$expression[fc] ,  as.numeric(as.factor(res$genotype[fc] ) )) ,
+   cor(res$expression[fc & ff],  as.numeric(as.factor(res$genotype[fc & ff]))) ,
+   cor(res$expression[fc & fm], as.numeric(as.factor(res$genotype[fc & fm]) ))) 
+
+colnames(temp3) = c("joint", "female", "male")
+ rownames(temp3) = file 
+
+
+
+
+
+
+temp3 = list() 
+for(j in 1:length(sbs[,1]) ){ 
+  #if( j == 28) { next; } 
+  if( j == 44) { next; }
+  if( j == 51) { next; }
+
+  file = grep( sbs[j,2], files, val=T) 
+
+  res = read.table(file, header=T)
+  celltypes = sort(unique(res$cellType) )
+  ff = res$sex == "female" 
+  fm = res$sex == "male"
+  fj = res$sex == "joint"
+  #  par(mfrow=c(7,9) ) 
+  celltypei = sbs[j,1] 
+   fc = res$cellType == celltypei   
+ rsid = strsplit(file, "_")[[1]][2]
+  geneid =  strsplit(file, "_")[[1]][1]
+  temp3[[j]] = cbind( cor(res$expression[fc & fj] ,  as.numeric(as.factor(res$genotype[fc &fj] ) ), m="s") ,
+   cor(res$expression[fc & ff],  as.numeric(as.factor(res$genotype[fc & ff])), m="s") ,
+   cor(res$expression[fc & fm], as.numeric(as.factor(res$genotype[fc & fm]) ), m="s"), 
+cor(res$expression[fc & fj] ,  as.numeric(as.factor(res$genotype[fc &fj] ) ), m="p") ,
+   cor(res$expression[fc & ff],  as.numeric(as.factor(res$genotype[fc & ff])), m="p") ,
+   cor(res$expression[fc & fm], as.numeric(as.factor(res$genotype[fc & fm]) ), m="p"), 
+   sum(fc&fj), sum(fc&ff), sum(fc & fm)   ) 
+
+}
+ 
+temp5 = list() 
+for(j in 1:length(sbs[,1]) ){ 
+  #if( j == 28) { next; } 
+  if( j == 44) { next; }
+  if( j == 51) { next; }
+
+  file = grep( sbs[j,2], files, val=T) 
+
+  res = read.table(file, header=T)
+  celltypes = sort(unique(res$cellType) )
+  ff = res$sex == "female" 
+  fm = res$sex == "male"
+  fj = res$sex == "joint"
+  celltypei = sbs[j,1] 
+  fc = res$cellType == celltypei   
+  rsid = strsplit(file, "_")[[1]][2]
+  geneid =  strsplit(file, "_")[[1]][1]
+
+ 
+  test1 = aov(res$expression[fc & fj] ~ as.numeric(as.factor(res$genotype[fc &fj]))) 
+  test2 = aov(res$expression[fc & ff] ~ as.numeric(as.factor(res$genotype[fc & ff]))) 
+  test3 = aov(res$expression[fc & fm] ~ as.numeric(as.factor(res$genotype[fc & fm])))  
+  temp5[[j]] = cbind( test1$coefficients[2] , test2$coefficients[2], test3$coefficients[2])  
+
+}  
+ 
+temp6 = lapply( 1:51, function(i) spread ( do.call(rbind, lapply(1:3, function(j) cbind(j, temp4[[i]][[j]]) ) ), key=1, value=3 ) )   
+ 
+checks = c(7,10,15,39,40)
+
+ 
+
+
+j = 51 
+file = "FAM118A_rs104664_plot_data.tsv"  
+celltypei="Plasmablast"   
+
+
+
+j = 44 
+file = "FAM118A_rs170505_plot_data.tsv"  
+celltypei="gdT"
+ 
+
+ 
+
+
+
+
+
+file = files[99]
+pdffile = gsub(".tsv", "_2.pdf", file)
+res = read.table(file, header=T)
+   celltypes = sort(unique(res$cellType) )
+  
+ pdf(pdffile, width=8, height=5)
+ 
+ for(celltypei in celltypes)  { 
+    print (celltypei)
+    ff = res$sex == "female" 
+    fm = res$sex == "male" 
+    rsid = strsplit(file, "_")[[1]][2]
+    geneid =  strsplit(file, "_")[[1]][1]
+    par(mfrow=c(1,3) ) 
+     fc = res$cellType == celltypei   
+     zlm = lm(res$expression[fc] ~  as.numeric(as.factor(res$genotype[fc])) )
+     zlmf = lm(res$expression[fc & ff] ~  as.numeric(as.factor(res$genotype[fc & ff]) ))
+     zlmm = lm(res$expression[fc & fm] ~  as.numeric(as.factor(res$genotype[fc & fm]) ))
+     yrange = range(res$expression[fc]) 
+
+     vioplot(res$expression[fc] ~ res$genotype[fc], ylim=yrange, main=paste( celltypei ,  geneid, rsid), xlab="Genotype", ylab="Residual", border= (1) , col=0, colMed = c(1), rectCol= make_transparent(1) , lineCol= (1)) 
+     abline(zlm, lwd=2)
+     vioplot(res$expression[fc & ff] ~ res$genotype[fc & ff], main="female", ylim=yrange,  xlab="Genotype", ylab="Residual" ,border= (colsex[2]) , col=0, colMed = c(colsex[2]), rectCol= make_transparent(colsex[2]) , lineCol= (colsex[2]))  
+     abline(zlmf, col=colsex[2], lwd=2)
+     vioplot(res$expression[fc & fm] ~ res$genotype[fc & fm], main="male", ylim=yrange,   xlab="Genotype", ylab="Residual", border= (colsex[1]) , col=0, colMed = c(colsex[1]), rectCol= make_transparent(colsex[1]) , lineCol= (colsex[1]))   
+     abline(zlmm, col=colsex[1], lwd=2)
+}
+dev.off() 
+
+ files = grep("tsv", dir("2022_11/plots_2/") , val=T)
+ 
+ file = files[99]
+pdffile = gsub(".tsv", "_3.pdf", file)
+res = read.table(file, header=T)
+   celltypes = sort(unique(res$cellType) )
+  
+ pdf(pdffile, width=8, height=5)
+ 
+ for(celltypei in celltypes)  { 
+    print (celltypei)
+    ff = res$sex == "female" 
+    fm = res$sex == "male" 
+    rsid = strsplit(file, "_")[[1]][2]
+    geneid =  strsplit(file, "_")[[1]][1]
+    par(mfrow=c(1,3) ) 
+     fc = res$cellType == celltypei   
+     zlm = lm(res$expression[fc] ~  as.numeric(as.factor(res$genotype[fc])) )
+     zlmf = lm(res$expression[fc & ff] ~  as.numeric(as.factor(res$genotype[fc & ff]) ))
+     zlmm = lm(res$expression[fc & fm] ~  as.numeric(as.factor(res$genotype[fc & fm]) ))
+     yrange = range(res$expression[fc]) 
+
+     vioplot(res$expression[fc] ~ res$genotype[fc], ylim=yrange, main=paste( celltypei ,  geneid, rsid), xlab="Genotype", ylab="Residual", border= (colsex[3]) , col=0, colMed = c(colsex[3]), rectCol= make_transparent(colsex[3]) , lineCol= (colsex[3])) 
+     beeswarm(res$expression[fc] ~ res$genotype[fc],   add=T, col=colsex[3] , pch=19, cex=0.5)    
+     abline(zlm, lwd=2)
+     vioplot(res$expression[fc & ff] ~ res$genotype[fc & ff], main="female", ylim=yrange,  xlab="Genotype", ylab="Residual" ,border= (colsex[2]) , col=0, colMed = c(colsex[2]), rectCol= make_transparent(colsex[2]) , lineCol= (colsex[2]))  
+     beeswarm(res$expression[fc & ff] ~ res$genotype[fc & ff],  col=(colsex[2]) , add=T, pch=19, cex=0.5)     
+     abline(zlmf, col=colsex[2], lwd=2)
+     vioplot(res$expression[fc & fm] ~ res$genotype[fc & fm], main="male", ylim=yrange,   xlab="Genotype", ylab="Residual", border= (colsex[1]) , col=0, colMed = c(colsex[1]), rectCol= make_transparent(colsex[1]) , lineCol= (colsex[1]))   
+     beeswarm(res$expression[fc & fm] ~ res$genotype[fc & fm],col= (colsex[1]) , add=T, pch=19, cex=0.5)      
+     abline(zlmm, col=colsex[1], lwd=2)
+}
+dev.off() 
+
+ 
+
+
+
+ files = grep("tsv", dir("2022_11/plots_2/") , val=T)
+  i = grep("CD52", files )
+ 
+
+ file = files[i] 
+pdffile = gsub(".tsv", "_2.pdf", file)
+res = read.table(file, header=T)
+   celltypes = sort(unique(res$cellType) )
+  
+ pdf(pdffile, width=8, height=5)
+ 
+ for(celltypei in celltypes)  { 
+    print (celltypei)
+    ff = res$sex == "female" 
+    fm = res$sex == "male" 
+    rsid = strsplit(file, "_")[[1]][2]
+    geneid =  strsplit(file, "_")[[1]][1]
+    par(mfrow=c(1,3) ) 
+     fc = res$cellType == celltypei   
+     zlm = lm(res$expression[fc] ~  as.numeric(as.factor(res$genotype[fc])) )
+     zlmf = lm(res$expression[fc & ff] ~  as.numeric(as.factor(res$genotype[fc & ff]) ))
+     zlmm = lm(res$expression[fc & fm] ~  as.numeric(as.factor(res$genotype[fc & fm]) ))
+     yrange = range(res$expression[fc]) 
+
+     vioplot(res$expression[fc] ~ res$genotype[fc], ylim=yrange, main=paste( celltypei ,  geneid, rsid), xlab="Genotype", ylab="Residual", border= (1) , col=0, colMed = c(1), rectCol= make_transparent(1) , lineCol= (1)) 
+     abline(zlm, lwd=2)
+     vioplot(res$expression[fc & ff] ~ res$genotype[fc & ff], main="female", ylim=yrange,  xlab="Genotype", ylab="Residual" ,border= (colsex[2]) , col=0, colMed = c(colsex[2]), rectCol= make_transparent(colsex[2]) , lineCol= (colsex[2]))  
+     abline(zlmf, col=colsex[2], lwd=2)
+     vioplot(res$expression[fc & fm] ~ res$genotype[fc & fm], main="male", ylim=yrange,   xlab="Genotype", ylab="Residual", border= (colsex[1]) , col=0, colMed = c(colsex[1]), rectCol= make_transparent(colsex[1]) , lineCol= (colsex[1]))   
+     abline(zlmm, col=colsex[1], lwd=2)
+}
+dev.off() 
+
+
+
+
+
+# FCGR3A 
+file = files[7]
+pdffile = gsub(".tsv", "_2.pdf", file)
+res = read.table(file, header=T)
+   celltypes = sort(unique(res$cellType) )
+  
+ pdf(pdffile, width=8, height=5)
+ 
+ for(celltypei in celltypes)  { 
+    print (celltypei)
+    ff = res$sex == "female" 
+    fm = res$sex == "male" 
+    rsid = strsplit(file, "_")[[1]][2]
+    geneid =  strsplit(file, "_")[[1]][1]
+    par(mfrow=c(1,3) ) 
+     fc = res$cellType == celltypei   
+     zlm = lm(res$expression[fc] ~  as.numeric(as.factor(res$genotype[fc])) )
+     zlmf = lm(res$expression[fc & ff] ~  as.numeric(as.factor(res$genotype[fc & ff]) ))
+     zlmm = lm(res$expression[fc & fm] ~  as.numeric(as.factor(res$genotype[fc & fm]) ))
+     yrange = range(res$expression[fc]) 
+
+     vioplot(res$expression[fc] ~ res$genotype[fc], ylim=yrange, main=paste( celltypei ,  geneid, rsid), xlab="Genotype", ylab="Residual", border= (colsex[3]) , col=0, colMed = c(colsex[3]), rectCol= make_transparent(colsex[3]) , lineCol= (colsex[3])) 
+     abline(zlm, col=colsex[3],  lwd=2)
+     vioplot(res$expression[fc & ff] ~ res$genotype[fc & ff], main="female", ylim=yrange,  xlab="Genotype", ylab="Residual" ,border= (colsex[2]) , col=0, colMed = c(colsex[2]), rectCol= make_transparent(colsex[2]) , lineCol= (colsex[2]))  
+     abline(zlmf, col=colsex[2], lwd=2)
+     vioplot(res$expression[fc & fm] ~ res$genotype[fc & fm], main="male", ylim=yrange,   xlab="Genotype", ylab="Residual", border= (colsex[1]) , col=0, colMed = c(colsex[1]), rectCol= make_transparent(colsex[1]) , lineCol= (colsex[1]))   
+     abline(zlmm, col=colsex[1], lwd=2)
+}
+dev.off() 
+
+
+
+
+
+
+
+
+
+
+# NK specific list
+library(vioplot)
+
+files = dir() 
+
+ 
+
+
+pdf("NK_X_results.pdf", width=8, height=5)
+for(file in files){ 
+  print(file)
+  res = read.table(file, header=T)
+  colnames(res)  = c("expression", "individual", "sex", "genotype")
+
+
+  celltypei = "NK"
+  geneid = gsub("plot_data_|.tsv", "", file)
+
+  ff = res$sex == "female" 
+  fm = res$sex == "male" 
+  fc = res$sex == "joint"
+      
+
+      zlm = lm(res$expression[fc] ~  as.numeric(as.factor(res$genotype[fc])) )
+      zlmf = lm(res$expression[ff] ~  as.numeric(as.factor(res$genotype[ff]) ))
+      zlmm = lm(res$expression[fm] ~  as.numeric(as.factor(res$genotype[fm]) ))
+      yrange = range(res$expression) 
+     par(mfrow=c(1,3) ) 
+      vioplot(res$expression[fc] ~ res$genotype[fc], ylim=yrange, main=geneid, xlab="Genotype", ylab="Residual", border= (colsex[3]) , col=0, colMed = c(colsex[3]), rectCol= (colsex[3]) , lineCol= (colsex[3])) 
+      abline(zlm, col=colsex[3],lwd=2)
+      vioplot(res$expression[ff] ~ res$genotype[ff], main="female", ylim=yrange,  xlab="Genotype", ylab="Residual" ,border= (colsex[2]) , col=0, colMed = c(colsex[2]), rectCol= (colsex[2]) , lineCol= (colsex[2]))  
+      abline(zlmf, col=colsex[2], lwd=2)
+      vioplot(res$expression[fm] ~ res$genotype[fm], main="male", ylim=yrange,   xlab="Genotype", ylab="Residual", border= (colsex[1]) , col=0, colMed = c(colsex[1]), rectCol= (colsex[1]) , lineCol= (colsex[1]))   
+      abline(zlmm, col=colsex[1], lwd=2)
+      
+}
+dev.off() 
+
+
+
+
+
+pdf("sept6_X_results.pdf", width=8, height=5)
+for(file in files){ 
+  print(file)
+  res = read.table(file, header=T)
+  colnames(res)  = c("expression", "individual", "sex", "genotype")
+
+
+  celltypei = "NK"
+  geneid = gsub("plot_data_|.tsv", "", file)
+
+  ff = res$sex == "female" 
+  fm = res$sex == "male" 
+  fc = res$sex == "joint"
+      
+
+      zlm = lm(res$expression[fc] ~  as.numeric(as.factor(res$genotype[fc])) )
+      zlmf = lm(res$expression[ff] ~  as.numeric(as.factor(res$genotype[ff]) ))
+      zlmm = lm(res$expression[fm] ~  as.numeric(as.factor(res$genotype[fm]) ))
+      yrange = range(res$expression) 
+     par(mfrow=c(1,3) ) 
+      vioplot(res$expression[fc] ~ res$genotype[fc], ylim=yrange, main=geneid, xlab="Genotype", ylab="Residual", border= (colsex[3]) , col=0, colMed = c(colsex[3]), rectCol= (colsex[3]) , lineCol= (colsex[3])) 
+      abline(zlm, col=colsex[3],lwd=2)
+      vioplot(res$expression[ff] ~ res$genotype[ff], main="female", ylim=yrange,  xlab="Genotype", ylab="Residual" ,border= (colsex[2]) , col=0, colMed = c(colsex[2]), rectCol= (colsex[2]) , lineCol= (colsex[2]))  
+      abline(zlmf, col=colsex[2], lwd=2)
+      vioplot(res$expression[fm] ~ res$genotype[fm], main="male", ylim=yrange,   xlab="Genotype", ylab="Residual", border= (colsex[1]) , col=0, colMed = c(colsex[1]), rectCol= (colsex[1]) , lineCol= (colsex[1]))   
+      abline(zlmm, col=colsex[1], lwd=2)
+      
+}
+dev.off() 
+
+
+
+
+
+
