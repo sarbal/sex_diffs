@@ -1,5 +1,27 @@
 # Figure 3: Sex-differential expression.
 
+freq = plyr::count( metadata$predicted.celltype.l3 ) 
+celltypes = freq[,1]
+celltypes = celltypes[-c(17,29)]
+
+ for(celltype in celltypes){ 
+    filt = !is.na(obj@meta.data$predicted.celltype.l3) &  obj@meta.data$predicted.celltype.l3 == celltype & !is.na(obj@meta.data$sex) 
+
+    temp = obj[,filt]
+    test = FindMarkers(temp, ident.1="1", ident.2="2", logfc.threshold=0, test.use="wilcox", group.by="sex")
+    save(test, file = paste0("wilcox_DE_", celltype, ".Rdata"))
+ 
+   test = FindMarkers(temp, ident.1="1", ident.2="2", logfc.threshold=0, test.use="bimod", group.by="sex")
+   save(test, file = paste0("bimod_DE_", celltype, ".Rdata"))
+
+   test = FindMarkers(temp, ident.1="1", ident.2="2", logfc.threshold=0, test.use="roc", group.by="sex")
+   save(test, file = paste0("roc_DE_", celltype, ".Rdata"))
+
+  test = FindMarkers(temp, ident.1="1", ident.2="2", logfc.threshold=0, test.use="MAST", group.by="sex")
+  save(test, file = paste0("mast_DE_", celltype, ".Rdata"))
+
+} 
+
 
 
 ## 
