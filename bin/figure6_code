@@ -1,1 +1,24 @@
 
+chrxeqtls =  read.table(file="chrX_cis_eQTLs_20220314_v2.tsv", header=T, sep="\t")
+chrxeqtls0 =  read.table("chrX_cis_eQTLs_20220314.tsv", header=T, sep="\t")
+
+chrxeqtls0 = chrxeqtls0[(chrxeqtls0$Chromosome !=""),] 
+chrxeqtls = chrxeqtls[(chrxeqtls$Chromosome !=""),] 
+
+chrmat_snp[chrmat_snp[,1] == "X",1] = 23 
+chrmat_gene[chrmat_gene[,1] == "X",1] = 23
+
+os = order(as.numeric(chrmat_snp[,1] )) 
+og = order(as.numeric(chrmat_gene[,1] )) 
+ 
+par(mfrow=c(1,2))
+barplot(t(chrmat_gene[og,-1][,f.t]), names=chrmat_gene[og,1], hor=T, col = colpals2[f.c,10], xlab="Number of egenes", border = NA)
+barplot(t(chrmat_snp[os,-1][,f.t]), names=chrmat_snp[os,1], hor=T, col = colpals2[f.c,10], xlab="Number of eSNPs", border = NA)
+
+## X chrm 
+ 
+par(mfrow=c(1,2))
+barplot(t(chrmat_gene[og,-1][23,f.t]),names = colpals2[f.c,9], hor=T, col = colpals2[f.c,10], xlab="Number of egenes", border = NA, beside=T)
+barplot(t(chrmat_snp[os,-1][23,f.t]),  names = colpals2[f.c,9], hor=T, col = colpals2[f.c,10], xlab="Number of eSNPs", border = NA, beside=T)
+
+
