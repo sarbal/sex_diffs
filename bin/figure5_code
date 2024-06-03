@@ -1,11 +1,9 @@
-masterdir = "V:"
-sb_cis = read.table(file=paste0(masterdir,"/projects/onek1k/eqtls/sb_cis_eQTLs_at_25perc_fdr.tsv"), sep="\t", header=T) 
-eqtls = read.table(file=paste0(masterdir,"/projects/onek1k/eqtls/OneK1K_eQTLs_Results_20220310.tsv"), sep="\t", header=T) 
-chrxeqtls =  read.table(file=paste0(masterdir,"/projects/onek1k/eqtls/chrX_cis_eQTLs_20220314_v2.tsv"), header=T, sep="\t")
+sb_cis = read.table(file="sb_cis_eQTLs_at_25perc_fdr.tsv", sep="\t", header=T) 
+eqtls = read.table(file="OneK1K_eQTLs_Results_20220310.tsv", sep="\t", header=T) 
+
 
 
 sbgenes = unique(sb_cis[,2])
-
 
 func <- function(x) { length(unique(x))}
 esnps = plyr::count(eqtls[,1]) 
@@ -54,11 +52,6 @@ barplot(t(chrmat_gene[og,-1][,f.t]), names=chrmat_gene[og,1], hor=T, col = colpa
 barplot(t(chrmat_snp[os,-1][,f.t]), names=chrmat_snp[os,1], hor=T, col = colpals2[f.c,10], xlab="Number of eSNPs", border = NA)
 
 
-chrxeqtls0 =  read.table("U:/SeyhanYazar/onek1k/sex_specific_eQTL_analysis/results/chrX_cis_eQTLs_20220314.tsv", header=T, sep="\t")
-chrxeqtls =  read.table("U:/SeyhanYazar/onek1k/sex_specific_eQTL_analysis/results/chrX_cis_eQTLs_20220314_v2.tsv", header=T, sep="\t")
-
-chrxeqtls0 = chrxeqtls0[(chrxeqtls0$Chromosome !=""),] 
-chrxeqtls = chrxeqtls[(chrxeqtls$Chromosome !=""),] 
 
 alleqtls = rbind(eqtls, chrxeqtls) 
 alleqtls = alleqtls[(alleqtls$Chromosome !=""),] 
@@ -88,37 +81,10 @@ barplot(egenes[f.t], hor=T, col = colpals2[f.c,10], xlab="Number of egenes", bor
 barplot(esnps[f.t,2], hor=T, col = colpals2[f.c,10], xlab="Number of eSNPs", border = NA)
 
 
-chrmat_snp[chrmat_snp[,1] == "X",1] = 23 
-chrmat_gene[chrmat_gene[,1] == "X",1] = 23
 
-os = order(as.numeric(chrmat_snp[,1] )) 
-og = order(as.numeric(chrmat_gene[,1] )) 
- 
-par(mfrow=c(1,2))
-barplot(t(chrmat_gene[og,-1][,f.t]), names=chrmat_gene[og,1], hor=T, col = colpals2[f.c,10], xlab="Number of egenes", border = NA)
-barplot(t(chrmat_snp[os,-1][,f.t]), names=chrmat_snp[os,1], hor=T, col = colpals2[f.c,10], xlab="Number of eSNPs", border = NA)
-
-## X chrm 
- 
-par(mfrow=c(1,2))
-barplot(t(chrmat_gene[og,-1][23,f.t]),names = colpals2[f.c,9], hor=T, col = colpals2[f.c,10], xlab="Number of egenes", border = NA, beside=T)
-barplot(t(chrmat_snp[os,-1][23,f.t]),  names = colpals2[f.c,9], hor=T, col = colpals2[f.c,10], xlab="Number of eSNPs", border = NA, beside=T)
-
-
-
-
-
-
-female_eqtls = read.table("/directflow/SCCGGroupShare/projects/SeyhanYazar/onek1k/sex_specific_eQTL_analysis/results/2022-03-14_conditional-analysis-stratified/female_top_eQTLs_19May22.tsv")
-male_eqtls = read.table("/directflow/SCCGGroupShare/projects/SeyhanYazar/onek1k/sex_specific_eQTL_analysis/results/2022-03-14_conditional-analysis-stratified/male_top_eQTLs_19May22.tsv") 
-
-
-
-
-
-
-
-
+### Sex stratified  
+female_eqtls = read.table("female_top_eQTLs_19May22.tsv")
+male_eqtls = read.table("male_top_eQTLs_19May22.tsv") 
 
 
 A =  female_eqtls[,c(1,2,3,4,5)] 
@@ -157,7 +123,6 @@ j_uniquem = sapply( names(female.list), function(i) length( ( setdiff(  joint.li
 temp = cbind( egenes, egenes_male, egenes_female, m_f_intersect, m_j_intersect, f_j_intersect, f_m_j_intersect,f_unique, m_unique, j_unique,  f_j_not_m, m_j_not_f,  f_m_not_j) 
 joint_male  = cbind( egenes, egenes_male, m_j_intersect, m_uniquej, j_uniquem) 
 joint_female =  cbind( egenes, egenes_female, f_j_intersect, f_uniquej, j_uniquef) 
-
 
 
 
