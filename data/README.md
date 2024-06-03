@@ -7,7 +7,7 @@
 - Output from MAST, edgeR, DESeq2 and Seurat's FindAllMarkers
   
 ### Co-expression networks
-- Output from 
+- Ouptut from EGAD analysis, networks are too large to upload here.
 
 ### eQTLs
-- Output from 
+- Output from conditional analysis 
