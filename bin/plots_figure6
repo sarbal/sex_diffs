@@ -33,6 +33,9 @@ barplot(t(chrmat_snp[os,-1][23,f.t]),  names = colpals2[f.c,9], hor=T, col = col
 
 
 
+
+
+
 pdf("sex_biased_eqtls_vln_plots.pdf", width=15)
 VlnPlot(temp, features=sbgenes, stack=T, group.by = "predicted.celltype.l3", split.by = "sex" , col=colsex, pt.size=0)     
 dev.off() 
@@ -506,8 +509,12 @@ alleqtlschrms = as.numeric(alleqtlschrms)
 alleqtlschrms[alleqtls$Chromosome=="X"]  = 23 
 alleqtlschrms = as.numeric(alleqtlschrms)
 
+male_nk = read.table("male_chrX_correlations_all_regions_mod")
+female_nk = read.table("female_chrX_correlations_all_regions_mod")
+
 # manhattan plot, mising non-sig, might ask for them
 plot( alleqtls$Position  + chrmlength[alleqtlschrms ,3] , -log10(as.numeric(alleqtls$FDR)), col = c("violet", "darkorchid")[alleqtlschrms%%2  + 1 ]  , pch=19  )
+ 
 
 
   
@@ -534,8 +541,6 @@ plot( alleqtls$Position[filt]  + chrmlength[alleqtlschrms ,3][filt] , -log10(as.
 library(vioplot)
 
 files = dir() 
-
- 
 
 
 pdf("NK_X_results.pdf", width=8, height=5)
