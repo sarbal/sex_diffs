@@ -28,7 +28,7 @@ sex_genes_mat_wilcox_up = sex_genes_mat_wilcox[,grep("up", colnames(sex_genes_ma
 sex_genes_mat_wilcox_down = sex_genes_mat_wilcox[,grep("down", colnames(sex_genes_mat_wilcox)  ) ]
 
 load("annotations/annots_x.Rdata")
-extra = read.table("ex_biased_genes_immune_schemidel", header=T, sep="\t")
+extra = read.table("sex_biased_genes_immune_schemidel", header=T, sep="\t")
 
 library(tidyverse)
 data = extra[-c(617,781),1:3]
