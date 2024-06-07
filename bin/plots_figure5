@@ -96,6 +96,38 @@ dev.off()
 # Panel F - differential expression overlap 
 ### plotting violin plots of genes FCGR3A and ITGB2 
 
+# FCGR3A 
+file = files[7]
+pdffile = gsub(".tsv", "_2.pdf", file)
+res = read.table(file, header=T)
+   celltypes = sort(unique(res$cellType) )
+  
+ pdf(pdffile, width=8, height=5)
+ 
+ for(celltypei in celltypes)  { 
+    print (celltypei)
+    ff = res$sex == "female" 
+    fm = res$sex == "male" 
+    rsid = strsplit(file, "_")[[1]][2]
+    geneid =  strsplit(file, "_")[[1]][1]
+    par(mfrow=c(1,3) ) 
+     fc = res$cellType == celltypei   
+     zlm = lm(res$expression[fc] ~  as.numeric(as.factor(res$genotype[fc])) )
+     zlmf = lm(res$expression[fc & ff] ~  as.numeric(as.factor(res$genotype[fc & ff]) ))
+     zlmm = lm(res$expression[fc & fm] ~  as.numeric(as.factor(res$genotype[fc & fm]) ))
+     yrange = range(res$expression[fc]) 
+
+     vioplot(res$expression[fc] ~ res$genotype[fc], ylim=yrange, main=paste( celltypei ,  geneid, rsid), xlab="Genotype", ylab="Residual", border= (colsex[3]) , col=0, colMed = c(colsex[3]), rectCol= make_transparent(colsex[3]) , lineCol= (colsex[3])) 
+     abline(zlm, col=colsex[3],  lwd=2)
+     vioplot(res$expression[fc & ff] ~ res$genotype[fc & ff], main="female", ylim=yrange,  xlab="Genotype", ylab="Residual" ,border= (colsex[2]) , col=0, colMed = c(colsex[2]), rectCol= make_transparent(colsex[2]) , lineCol= (colsex[2]))  
+     abline(zlmf, col=colsex[2], lwd=2)
+     vioplot(res$expression[fc & fm] ~ res$genotype[fc & fm], main="male", ylim=yrange,   xlab="Genotype", ylab="Residual", border= (colsex[1]) , col=0, colMed = c(colsex[1]), rectCol= make_transparent(colsex[1]) , lineCol= (colsex[1]))   
+     abline(zlmm, col=colsex[1], lwd=2)
+}
+dev.off() 
+
+
+
 ### plotting volcano plots for NK and CD14 Monocytes  
 
 
