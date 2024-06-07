@@ -165,4 +165,54 @@ load("annotations/annots_hgnc.Rdata")
 enrich.marker.hgnc = lapply(1:dim(annots_az)[2], function(i) gene_set_enrichment(rownames(annots_az)[annots_az[,i]>0],  annots,  voc   ))
 
 save(enrich.marker.immp,enrich.marker.hgnc, enrich.marker.c3,  enrich.marker.c2, enrich.marker.c7 ,  enrich.marker.h,  maz.voc,  file="enrich.markers.Rdata")
- 
+
+
+
+
+
+
+enrich_degs_x = lapply(1:dim(sex_genes_mat_wilcox)[2], function(i) gene_set_enrichment( names(which(sex_genes_mat_wilcox[,i] > 0) ) , annots_x, voc) )
+pvals = sapply(1:length(enrich_degs_x), function(i) enrich_degs_x[[i]][,5])
+
+enrich_degs_x_exp = lapply(1:dim(sex_genes_mat_wilcox)[2], function(i) gene_set_enrichment( names(which(sex_genes_mat_wilcox[,i] > 0) ) , annots_x_exp, voc_exp) )
+pvals_exp = sapply(1:length(enrich_degs_x_exp), function(i) enrich_degs_x_exp[[i]][,5])
+
+pvals_exp = apply(pvals_exp, 2, as.numeric)
+rownames(pvals_exp) =  enrich_degs_x_exp[[1]][,1]
+colnames(pvals_exp) =  colnames(sex_genes_mat_wilcox) 
+
+padj = apply(pvals_exp, 2, p.adjust)
+rownames(padj) =  rownames(pvals_exp) 
+colnames(padj) =  colnames(pvals_exp) 
+
+pp = sapply(1:length(enrich_degs_x_exp), function(i) enrich_degs_x_exp[[i]][,3])
+pp = apply(pp, 2, as.numeric)
+rownames(pp) =  rownames(pvals_exp) 
+colnames(pp) =  colnames(pvals_exp) 
+
+pp = pp + 1  
+
+
+skip = c("Eryth", "HSPC", "Platelet")
+filt =  is.na(match(  celltypes, skip) ) &  grepl("up|down", colnames(padj)  ) 
+
+filt2 =  (rowSums(pp)  > 0 ) 
+tp = rowSums(pp)
+tp[ grep("Xi", rownames(pp))  ]  = 0 
+tp[14] = 1 # escape genes
+tp[34] = 1 # whlbld specific escape
+tp[51:80] = 0 
+filt3  = tp > 0
+
+
+row_cols = (rbind(gene_set_cols, rep("white", length(gene_set_cols))))
+col_cols = (rbind(colcols, colsex2))
+col_filt = which(filt)
+row_filt = which(filt3)
+
+pdf("sex_degs_enrich_dotplot.pdf", width=15, height=10)
+dotplot_extra_dendro( padj, pvals_exp, pp , rownames(padj), celltypes,  filt_row = row_filt , filt_col =col_filt   , colcol= col_cols , rowcol= row_cols  , rowden = T , colden = T ) 
+dev.off() 
+
+
+save(pvals_exp, padj, row_filt, col_filt, col_cols, row_cols, pp, celltypes, enrich_degs_x_exp, file="data/enrich_degs_x_exp.Rdata")
