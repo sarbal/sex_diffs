@@ -1,13 +1,14 @@
 # Figure 5: Sex-linked cis-eQTLs and sex-interacting eQTLs
-
-## Panel A 
- 
-load("eqtls_so_far.Rdata")
 load("palette2.Rdata")
 source("helper.r")
+
+# Panel A - illustration
+
+# Panel B - total counts of eqtls across male, female and joint 
+
+load("eqtls_so_far.Rdata")
 sbgenes = unique(sb_cis[,2])
 func <- function(x) { length(unique(x))}
-
 
 skip = c("Eryth", "Platelet", "HSPC", "ILC", "CD4 Proliferating", "CD8 Proliferating")
 filt = is.na(match(eqtls[,1] , skip))
@@ -24,9 +25,6 @@ male_eqtls = male_eqtls[filt,]
 
 filt = is.na(match(female_eqtls[,1] , skip))
 female_eqtls = female_eqtls[filt,]
-
-
-
 
 alleqtls = rbind(eqtls, chrxeqtls) 
 alleqtls = alleqtls[(alleqtls$Chromosome !=""),] 
@@ -50,7 +48,6 @@ egenes_female = tapply( female_eqtls[,3], female_eqtls[,1], func)
 esnps_male = plyr::count(male_eqtls[,1]) 
 egenes_male = tapply( male_eqtls[,3], male_eqtls[,1], func)
 
-
 temp = plyr::count( cbind(alleqtls$Chromosome, alleqtls$cell_type) )
 chrmat_snp = spread(temp, key="x.2", value="freq") 
 chrmat_snp[is.na(chrmat_snp)] = 0 
@@ -59,11 +56,8 @@ temp = plyr::count( unique(cbind(alleqtls$Chromosome, alleqtls$cell_type, alleqt
 chrmat_gene = spread(temp, key="x.2", value="freq") 
 chrmat_gene[is.na(chrmat_gene)] = 0 
 
-
 chrmat_snp[chrmat_snp[,1] == "X",1] = 23 
 chrmat_gene[chrmat_gene[,1] == "X",1] = 23
-
-
 
 # Joint analysis 
 pdf("joint_analysis_eqtls.pdf")
@@ -71,7 +65,6 @@ par(mfrow=c(1,2))
 barplot(esnps[f.t,2], hor=T, col = colpals2[f.c,10], xlab="Number of eSNPs", border = NA)
 barplot(egenes[f.t], hor=T, col = colpals2[f.c,10], xlab="Number of egenes", border = NA)
 dev.off() 
-
 
 # Stratified analysis 
 pdf("female_analysis_eqtls.pdf")
@@ -86,13 +79,6 @@ barplot(esnps_male[f.t,2], hor=T, col = colpals2[f.c,10], xlab="Number of eSNPs"
 barplot(egenes_male[f.t], hor=T, col = colpals2[f.c,10], xlab="Number of egenes", border = NA)
 dev.off() 
 
-
-
-
-
-
-## Panel B 
-
 # Sex-biased eqtls 
 pdf("sb_eqtls.pdf")
 par(mfrow=c(1,2))
@@ -101,9 +87,17 @@ barplot(egenes_sb[f.t2], hor=T, col = colpals2[f.c2,10], xlab="Number of egenes"
 dev.off() 
 
 
- 
-freqx = plyr::count(chrxeqtls[,2])
-chrxgenes = freqx[freqx[,2] > 2,1]
+# Panel C - upset plots 
+
+# Panel D - comparing rho estimates 
+
+# Panel E - example plots  
+
+# Panel F - differential expression overlap 
+### plotting violin plots of genes FCGR3A and ITGB2 
+
+### plotting volcano plots for NK and CD14 Monocytes  
+
 
 
 
