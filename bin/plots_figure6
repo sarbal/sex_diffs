@@ -1,6 +1,128 @@
 Fig. 6: Sex chromosome eQTL analysis. 
 
-# Panel A - illustrations, using ideograms 
+# Panel A - illustrations, using ideograms and karyotype 
+
+
+
+
+BiocManager::install("karyoploteR")
+BiocManager::install("TxDb.Hsapiens.UCSC.hg19.knownGene")
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(karyoploteR)
+
+txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+all.genes <- genes(txdb)
+
+kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY"))
+kp <- kpPlotDensity(kp, all.genes)
+kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY")) 
+kp <- kpPlotDensity(kp, all.genes, window.size = 1e4 )
+
+
+escape = read.table("V:/logfiles/escape_genes_tuki2017")
+all.genes <- genes(txdb, columns = "GENEID")
+escape_entrez = EGAD::attr.human$entrezID[match( escape[,1], EGAD::attr.human$name )]
+x_genes = subset(all.genes, GENEID %in% escape_entrez)
+kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY"))
+kp <- kpPlotDensity(kp, x_genes, window.size = 1e5)
+
+kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY"))
+kp <- kpPlotDensity(kp, x_genes, window.size = 1e4, col="darkblue")
+kp <- kpPlotDensity(kp, all.genes, window.size = 1e4, col="darkblue")
+  
+
+
+
+
+
+
+
+  BiocManager::install("karyoploteR")
+BiocManager::install("TxDb.Hsapiens.UCSC.hg19.knownGene")
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(karyoploteR)
+
+txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+all.genes <- genes(txdb)
+
+kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY"))
+kp <- kpPlotDensity(kp, all.genes)
+kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY")) 
+kp <- kpPlotDensity(kp, all.genes, window.size = 1e4 )
+
+
+escape = read.table("V:/logfiles/escape_genes_tuki2017")
+all.genes <- genes(txdb, columns = "GENEID")
+escape_entrez = EGAD::attr.human$entrezID[match( escape[,1], EGAD::attr.human$name )]
+x_genes = subset(all.genes, GENEID %in% escape_entrez)
+kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY"))
+kp <- kpPlotDensity(kp, x_genes, window.size = 1e5)
+
+
+kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY"))
+kpDataBackground(kp, data.panel = 2)
+kpDataBackground(kp, data.panel = 1)
+kpPlotDensity(kp, all.genes, window.size = 1e4, col="darkblue")
+kpPlotDensity(kp, x_genes, window.size = 1e4, col="red", data.panel=2) 
+kpAxis(kp,cex=0.5, data.panel=2, side=1)
+kpAxis(kp,cex=0.5, data.panel=1, side=1)
+kpPlotMarkers(kp, x_genes, labels= attr.human$name[match( labels(x_genes), attr.human$entrezID ) ] ) 
+
+
+kp <- plotKaryotype(genome="hg19", plot.type=4, chromosomes=c("chrX", "chrY"))
+kpDataBackground(kp, data.panel = 2)
+kpDataBackground(kp, data.panel = 1)
+kpPlotDensity(kp, all.genes, window.size = 1e4, col="darkblue")
+kpPlotDensity(kp, x_genes, window.size = 1e4, col="red", data.panel=2) 
+ 
+
+
+
+kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY"))
+kpDataBackground(kp, data.panel = 2)
+kpDataBackground(kp, data.panel = 1)
+kpPlotCoverage(kp, all.genes,  col="darkblue")
+kpPlotCoverage(kp, x_genes,  col="red", data.panel=2) 
+kpAxis(kp,cex=0.5, data.panel=2, side=1)
+kpAxis(kp,cex=0.5, data.panel=1, side=1)
+
+degs = c("RPS4Y1",
+"DDX3Y",
+"EIF1AY",
+"RPL39",
+"TSC22D3",
+"CD99",
+"KDM5D",
+"RPL36A",
+"TTTY15",
+"RPS4X",
+"XIST",
+"EIF1AX",
+"EIF2S3",
+"SEPT6",
+"FLNA",
+"IL2RG",
+"PLP2","SAT1","SMC1A","SYAP1",
+"ZRSR2")
+
+
+#degs = c("CD99","RPS4X","XIST","EIF1AX","EIF2S3","SMC1A","SYAP1","ZRSR2")
+degs2 = attr.human$entrezID[match( degs, attr.human$name ) ]
+
+x_genes2 = subset(x_genes, gene_id %in% degs2)
+y_genes2 = subset(y_genes, gene_id %in% degs2)
+
+kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY"))
+kpPlotDensity(kp, x_genes, window.size = 1e4, col="darkblue")
+kpPlotDensity(kp, y_genes, window.size = 1e4, col="darkblue")
+
+kpPlotMarkers(kp, x_genes2, labels= attr.human$name[match( labels(x_genes2), attr.human$entrezID ) ], data.panel=2 ) 
+kpPlotMarkers(kp, y_genes2, labels= attr.human$name[match( labels(y_genes2), attr.human$entrezID ) ], data.panel=2 ) 
+
+
+
+
+
 # Panel B - illustrations 
 
 # Panel C - PAR results 
