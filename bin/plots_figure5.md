@@ -1,6 +1,7 @@
 Fig. 5: Sex chromosome eQTL analysis. 
 
-# Panel A - illustrations, using ideograms and karyotype 
+### Panel A - illustrations, using ideograms and karyotype 
+```{r}
 BiocManager::install("karyoploteR")
 BiocManager::install("TxDb.Hsapiens.UCSC.hg19.knownGene")
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
@@ -86,15 +87,15 @@ kpPlotDensity(kp, y_genes, window.size = 1e4, col="darkblue")
 
 kpPlotMarkers(kp, x_genes2, labels= attr.human$name[match( labels(x_genes2), attr.human$entrezID ) ], data.panel=2 ) 
 kpPlotMarkers(kp, y_genes2, labels= attr.human$name[match( labels(y_genes2), attr.human$entrezID ) ], data.panel=2 ) 
+```
 
 
 
 
+### Panel B - illustrations 
 
-# Panel B - illustrations 
-
-# Panel C - PAR results 
-
+### Panel C - PAR results 
+```{r}
 chrxeqtls =  read.table(file="chrX_cis_eQTLs_20220314_v2.tsv", header=T, sep="\t")
 chrxeqtls0 =  read.table("chrX_cis_eQTLs_20220314.tsv", header=T, sep="\t")
 
@@ -115,17 +116,12 @@ barplot(t(chrmat_snp[os,-1][,f.t]), names=chrmat_snp[os,1], hor=T, col = colpals
 par(mfrow=c(1,2))
 barplot(t(chrmat_gene[og,-1][23,f.t]),names = colpals2[f.c,9], hor=T, col = colpals2[f.c,10], xlab="Number of egenes", border = NA, beside=T)
 barplot(t(chrmat_snp[os,-1][23,f.t]),  names = colpals2[f.c,9], hor=T, col = colpals2[f.c,10], xlab="Number of eSNPs", border = NA, beside=T)
-
+```
 
  
 
-## Panel D
-
-
-
-
-
-
+### Panel D
+```{r}
 pdf("sex_biased_eqtls_vln_plots.pdf", width=15)
 VlnPlot(temp, features=sbgenes, stack=T, group.by = "predicted.celltype.l3", split.by = "sex" , col=colsex, pt.size=0)     
 dev.off() 
@@ -576,6 +572,7 @@ res = read.table(file, header=T)
      abline(zlmm, col=colsex[1], lwd=2)
 }
 dev.off() 
+```
 
 
 
@@ -584,9 +581,9 @@ dev.off()
 
 
 
-
-# Panel G 
-chrmlength = read.table("V:/data/references/GRCh38_Gencode33/chrNameLength.txt")
+### Panel G 
+```{r}
+chrmlength = read.table(chrNameLength.txt")
 chrmlength = chrmlength[grep("chr", (chrmlength[,1]) ) ,]
 startpos = cumsum( as.numeric(chrmlength[,2]) ) 
 startpos = c(0,startpos)
@@ -696,7 +693,7 @@ for(file in files){
       
 }
 dev.off() 
-
+```
 
 
 
