@@ -1,10 +1,6 @@
-Fig. 6: Sex chromosome eQTL analysis. 
+Fig. 5: Sex chromosome eQTL analysis. 
 
 # Panel A - illustrations, using ideograms and karyotype 
-
-
-
-
 BiocManager::install("karyoploteR")
 BiocManager::install("TxDb.Hsapiens.UCSC.hg19.knownGene")
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
@@ -19,47 +15,19 @@ kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY"))
 kp <- kpPlotDensity(kp, all.genes, window.size = 1e4 )
 
 
-escape = read.table("V:/logfiles/escape_genes_tuki2017")
+escape = read.table("escape_genes_tuki2017")
 all.genes <- genes(txdb, columns = "GENEID")
 escape_entrez = EGAD::attr.human$entrezID[match( escape[,1], EGAD::attr.human$name )]
 x_genes = subset(all.genes, GENEID %in% escape_entrez)
+
 kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY"))
 kp <- kpPlotDensity(kp, x_genes, window.size = 1e5)
 
 kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY"))
 kp <- kpPlotDensity(kp, x_genes, window.size = 1e4, col="darkblue")
 kp <- kpPlotDensity(kp, all.genes, window.size = 1e4, col="darkblue")
-  
+   
 
-
-
-
-
-
-
-  BiocManager::install("karyoploteR")
-BiocManager::install("TxDb.Hsapiens.UCSC.hg19.knownGene")
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-library(karyoploteR)
-
-txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
-all.genes <- genes(txdb)
-
-kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY"))
-kp <- kpPlotDensity(kp, all.genes)
-kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY")) 
-kp <- kpPlotDensity(kp, all.genes, window.size = 1e4 )
-
-
-escape = read.table("V:/logfiles/escape_genes_tuki2017")
-all.genes <- genes(txdb, columns = "GENEID")
-escape_entrez = EGAD::attr.human$entrezID[match( escape[,1], EGAD::attr.human$name )]
-x_genes = subset(all.genes, GENEID %in% escape_entrez)
-kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY"))
-kp <- kpPlotDensity(kp, x_genes, window.size = 1e5)
-
-
-kp <- plotKaryotype(genome="hg19", plot.type=2, chromosomes=c("chrX", "chrY"))
 kpDataBackground(kp, data.panel = 2)
 kpDataBackground(kp, data.panel = 1)
 kpPlotDensity(kp, all.genes, window.size = 1e4, col="darkblue")
