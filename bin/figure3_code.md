@@ -1,4 +1,4 @@
-# Figure 3: Sex-differential expression.
+# Figure 3: Sex-differential expression
 
 ### Load in data
 ```{r}
