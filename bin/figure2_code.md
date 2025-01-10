@@ -1,9 +1,11 @@
 # Figure 2: Distributions of cell-type proportions across sex. 
 
 ## Panel A 
+
 in_seurat_file = "cell_type.RDS"
 in_indiv_phen_file = "phen.RDS"
 in_meta_file = "metadata.Rdata"
+
 # Read in seurat object and individual metadata 
 obj   <- readRDS(in_seurat_file)
 phens <- readRDS(in_indiv_phen_file)
