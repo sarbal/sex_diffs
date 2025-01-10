@@ -1,4 +1,4 @@
-# Figure 5: Sex-linked cis-eQTLs and sex-interacting eQTLs
+# Figure 4: Sex-linked cis-eQTLs and sex-interacting eQTLs
 load("palette2.Rdata")
 source("helper.r")
 
