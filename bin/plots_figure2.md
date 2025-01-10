@@ -1,10 +1,12 @@
 # Figure 2: Distributions of cell-type proportions across sex. 
 
-## Panel A & C 
+### Panel A & C 
+```{r}
 in_seurat_file = "cell_type.RDS"
 in_indiv_phen_file = "phen.RDS"
 in_meta_file = "metadata.Rdata"
 # Read in seurat object and individual metadata 
+
 obj   <- readRDS(in_seurat_file)
 phens <- readRDS(in_indiv_phen_file)
 load( in_meta_file) 
@@ -55,12 +57,13 @@ DimPlot(obj,
     group.by = "sex" , 
     cols= colsex) + NoLegend() 
 dev.off()
- 
+```
 
 
 
 
-## Panel B total counts + individuals 
+### Panel B total counts + individuals 
+```{r}
 load("freq_sex_cell_l2.Rdata") 
 load("palette2.Rdata")
 
@@ -72,9 +75,10 @@ freq_sex_cell
 pdf("freq_sex_cell.pdf", height=10) 
 barplot( log10( t(t(freq_sex_cell[,c(4:2)])) ) , col=colpals[-32,3], beside=T, hor=T ) 
 dev.off() 
+```
 
-
-## Panel D proportions  
+### Panel D proportions  
+```{r}
 load(file="props_tests_cell_l2_merged_skip.Rdata") 
 load(file="palette2.Rdata")
 
@@ -148,8 +152,10 @@ tt = lapply(oi, function(i) segments( mean(tempfrac0lm[i,]),  ((i-1)*ni) ,
 
 text(xmax, ((oi -1)*ni), xxx)
 dev.off() 
+```
 
-# Panel E FDRs vesus ratio   
+### Panel E FDRs vesus ratio   
+```{r}
 m = match( props0$BaselineProp.clusters, colpals2[,9] ) 
 sigs = props0$FDR < 0.05
 
@@ -159,9 +165,10 @@ abline(v=1, col="grey", lwd=3, lty=2)
 abline(h=-log10(0.05 ), col=3  )
 text(props0$PropRatio[sigs], -log10(props0$FDR)[sigs] + 0.2, props0$BaselineProp.clusters[sigs])
 dev.off() 
-
+```
 
 #### Supp figg correlations with age 
+```{r}
 ff = phens$sex==2
 fm = phens$sex==1
  phens$age =  as.numeric(phens$age)
@@ -204,7 +211,7 @@ bb = 2 *(aa >= -log10(0.05) ) + 1
 pdf("correlations_age_l2_merged_skip.pdf")
 beeswarm(a~b, pch=19, pwcol=d , ylab="Correlations (rho)", xlab="", bty="n",pwcex=bb) 
 dev.off()
-
+```
  
 
 
