@@ -6,7 +6,7 @@ in_seurat_file = "cell_type.RDS"
 in_indiv_phen_file = "phen.RDS"
 in_meta_file = "metadata.Rdata"
 
-# Read in seurat object and individual metadata 
+### Read in seurat object and individual metadata 
 obj   <- readRDS(in_seurat_file)
 phens <- readRDS(in_indiv_phen_file)
 load( in_meta_file) 
@@ -16,7 +16,7 @@ load("umap.Rdata")
 load("palette2.Rdata")
 load("umap_featuresXY.Rdata") 
 
-# Cell counts 
+### Cell counts 
 freq1 = plyr:: count( obj$predicted.celltype.l2[ obj$sex=="1"] )
 freq2 = plyr:: count( obj$predicted.celltype.l2[ obj$sex=="2"] )
 freq = plyr:: count( obj$predicted.celltype.l2 )
@@ -24,7 +24,8 @@ freq_sex_cell = cbind(freq, freq1[,2], freq2[,2]  )
 colnames(freq_sex_cell) = c("celltype", "total", "male", "female" )
 save(freq_sex_cell, file="freq_sex_cell_l2.Rdata")
 
-# Cell proportions analysis 
+### Cell proportions analysis 
+```{r}
 library(speckle)
 load("phens.Rdata")
 
@@ -163,7 +164,7 @@ tempfrac0lm.d2 = lapply(1:length(tempfrac0lm.d), function(i) cbind( c(0,tempfrac
  
 
 save(tempfrac0,freq_sexp0, props0, tempfrac0lf, tempfrac0lm, phens,  tempfrac0lf.d, tempfrac0lf.d2,  tempfrac0lm.d, tempfrac0lm.d2, tempfrac0l.d, tempfrac0l.d2, file="props_tests_cell_l2_original_skip.Rdata")
-
+```
 
 
  
