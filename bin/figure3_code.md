@@ -2,7 +2,13 @@
 
 ### Load in data
 ```{r}
-library(tidyverse)
+source("helper.r")
+# library(tidyverse)
+exprs_dir = "cellranger_outs/"
+out_dir = "markerDE/"
+load("metadata.Rdata") 
+setwd(exprs_dir)
+
 
 load("annotations/annots_x.Rdata")
 extra = read.table("sex_biased_genes_immune_schemidel", header=T, sep="\t")
@@ -13,11 +19,7 @@ data_x = 1*(data_mat > 0)
 rownames(data_x) = genes_mat
 save(data_x, data_mat, genes_mat, file="annotations/annots_extra_sch.Rdata")
 
-source("helper.r")
-exprs_dir = "cellranger_outs/"
-out_dir = "markerDE/"
-load("metadata.Rdata") 
-setwd(exprs_dir)
+
 ```
 ### Calculate DE by celltype*
 Note, "l3" is not the current l3 from Azimuth but a modified (ie merged cells) version of l2. 
