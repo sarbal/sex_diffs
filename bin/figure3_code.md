@@ -105,7 +105,7 @@ save(pvals_exp, padj, row_filt, col_filt, col_cols, row_cols, pp, celltypes, enr
 ```
 
 
-### Calculate marker genes
+### Identify marker genes
 ```{r]
 ni = 1 
 annotf.list = list() 
