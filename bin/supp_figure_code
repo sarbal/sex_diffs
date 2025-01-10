@@ -1,4 +1,4 @@
-# Figure 4: Co-expression by cell-type and sex.
+# Figure Supp: Co-expression by cell-type and sex.
 
 cols <- colorRampPalette(brewer.pal(11, "PRGn"))(100)
 agg_files = rownames(sample.cor)
