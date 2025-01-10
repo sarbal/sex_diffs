@@ -1,11 +1,9 @@
 # Figure 4: Sex-linked cis-eQTLs and sex-interacting eQTLs
+
+### Panel B - total counts of eqtls across male, female and joint 
+```{r}
 load("palette2.Rdata")
 source("helper.r")
-
-# Panel A - illustration
-
-# Panel B - total counts of eqtls across male, female and joint 
-
 load("eqtls_so_far.Rdata")
 sbgenes = unique(sb_cis[,2])
 func <- function(x) { length(unique(x))}
@@ -85,17 +83,17 @@ par(mfrow=c(1,2))
 barplot(esnps_sb[f.t2,2], hor=T, col = colpals2[f.c2,10], xlab="Number of eSNPs", border = NA)
 barplot(egenes_sb[f.t2], hor=T, col = colpals2[f.c2,10], xlab="Number of egenes", border = NA)
 dev.off() 
+```
 
+### Panel C - upset plots 
 
-# Panel C - upset plots 
+### Panel D - comparing rho estimates 
 
-# Panel D - comparing rho estimates 
+### Panel E - example plots  
 
-# Panel E - example plots  
-
-# Panel F - differential expression overlap 
-### plotting violin plots of genes FCGR3A and ITGB2 
-
+### Panel F - differential expression overlap 
+#### plotting violin plots of genes FCGR3A and ITGB2 
+```{r}
 # FCGR3A 
 file = files[7]
 pdffile = gsub(".tsv", "_2.pdf", file)
@@ -125,28 +123,9 @@ res = read.table(file, header=T)
      abline(zlmm, col=colsex[1], lwd=2)
 }
 dev.off() 
-
+```
 
 
 ### plotting volcano plots for NK and CD14 Monocytes  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```{r}
+```
