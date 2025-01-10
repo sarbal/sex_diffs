@@ -1,7 +1,7 @@
 # Figure 3: Sex-differential expression.
 
-# Panel A - umap features XY 
-
+### Panel A - umap features XY 
+```{r}
 load("umap_featuresXY.Rdata") 
 obj@reductions$umap  = umap_v2 
  
@@ -23,9 +23,10 @@ dev.off()
 
  
 m = match(levels(factor(obj$predicted.celltype.l3)), colpals5[,11] )
+```
  
-# Panel B - umap features XY 
-
+### Panel B - umap features XY 
+```{r}
 png("umap_l3xy.png", height=2000, width=2000)
 DimPlot(obj, 
     reduction = "umap", 
@@ -34,10 +35,9 @@ DimPlot(obj,
     group.by = "predicted.celltype.l3" , 
     cols= colpals5[m,12]) + NoLegend() 
 dev.off()
- 
- 
- 
-# Panel C - DEGs 
+``` 
+### Panel C - DEGs 
+```{r} 
 load("seurat_sex_degs.Rdata")
 sex_genes_mat_mast = sex_genes_mat[,grep("mast-", colnames(sex_genes_mat)  ) ]
 sex_genes_mat_mast_up = sex_genes_mat_mast[,grep("up", colnames(sex_genes_mat_mast)  ) ]
@@ -100,12 +100,12 @@ dev.off()
 
 sex_genes_mat_mast_up = sex_genes_mat_mast_up[,m]
 sex_genes_mat_mast_down  = sex_genes_mat_mast_down[,m]
+```
 
 
 
-
-# Panel D - recurrence 
-
+### Panel D - recurrence 
+```{r}
 recur_up = rowSums(sex_genes_mat_mast_up[,filt]) 
 recur_down = rowSums(sex_genes_mat_mast_down[,filt]) 
 
@@ -212,12 +212,13 @@ names(unique_down_wilcox)  = temp3
 names(unique_up_wilcox)  = temp3
 names(unique_down_mast)  = temp3
 names(unique_up_mast)  = temp3
+```
 
 
 
 
-
-# Panel E - enrichment heatmap  
+### Panel E - enrichment heatmap
+```{r}
 genes = rownames(sex_genes_mat) 
 sex_genes_mat_mast = sex_genes_mat[,grep("mast", colnames(sex_genes_mat) ) ] 
 
@@ -233,9 +234,7 @@ sex_degs_mast = lapply(  grep("up|down", colnames(sex_genes_mat_mast), inver=T) 
 names(sex_degs_mast) =  gsub("mast ", "", colnames(sex_genes_mat_mast)) [grep("up|down", colnames(sex_genes_mat_mast), inver=T)] 
 celltypes = names(sex_degs_mast)
 
-
-
-
+ 
 
 pvals = sapply(1:length(enrich_degs), function(i) enrich_degs[[i]][,5])
 pvals = apply(pvals, 2, as.numeric)
@@ -253,7 +252,7 @@ pp = apply(pp, 2, as.numeric)
 rownames(pp) =  rownames(pvals) 
 colnames(pp) =  colnames(pvals) 
 
-  
+ 
 celltypes =  gsub("mast-up |mast-down |mast ", "", colnames(padj)) 
 skip = c("Eryth", "HSPC", "Platelet")
 filt =  is.na(match( celltypes , skip) )   
@@ -266,8 +265,7 @@ colcols = colpals2[f.c,10]
 pdf("sex_degs_enrich_heatmap.pdf")
 heatmap.3(-log10(padj[,filt] ), col=cols6, cexRow=0.5, ColSideCol=colcols[filt]  )
 dev.off() 
-
-
+ 
 
 celltypes = gsub("wilcox-up |wilcox-down |wilcox ", "", colnames(padj) )  
 skip = c("Eryth", "HSPC", "Platelet")
@@ -282,9 +280,7 @@ pdf("sex_degs_enrich_heatmap_wilcox.pdf")
 heatmap.3(-log10(padj[,filt] ), col=cols6, cexRow=0.5, ColSideCol=colcols[filt]  )
 dev.off() 
 
-
-
-
+ 
 sex_genes_mat_mast = sex_genes_mat_wilcox
 sex_genes_mat_mast_up = sex_genes_mat_wilcox_up
 sex_genes_mat_mast_down = sex_genes_mat_wilcox_down
@@ -741,11 +737,11 @@ dotplot_extra_dendro( padj, pvals, pp , rownames(padj), celltypes,  filt_row = w
 filt4 = is.na( match(rownames(paz), skip)   ) 
 dotplot_extra_dendro( padjaz, pvalsaz, paz , rownames(padjaz), colnames(padjaz),  filt_row = filt4  , filt_col = filt , rowcol= "", colcol= colcols2 ) 
  
+```
 
 
-
-# Panel F - density plots of genes 
-
+### Panel F - density plots of genes 
+```{r}
 library(Nebulosa) 
 filt = !is.na(obj$predicted.celltype.l3) & obj$predicted.celltype.l3 != "Doublet"
 temp = obj[,filt] 
@@ -790,7 +786,7 @@ temp$predicted.celltype.l3 <- test
 pdf("sex_degs_vln_plots.pdf", width=15)
 VlnPlot(temp  , features= rev(genes_of_interest),stack=T,  group.by = "predicted.celltype.l3", split.by = "sex" , col=colsex,pt.size=0)
 dev.off() 
-
+```
 
 
 
