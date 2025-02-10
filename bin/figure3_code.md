@@ -13,6 +13,7 @@ setwd(exprs_dir)
 load("annotations/annots_x.Rdata")
 extra = read.table("sex_biased_genes_immune_schemidel", header=T, sep="\t")
 data = extra[-c(617,781),1:3]
+data_mat = as.matrix(pivot_wider(data, names_from="Cell.type", values_from = "Log2.fold.change.F.vs..M") )
 genes_mat = data_mat[,1]
 data_mat = data_mat[,-1]
 data_x = 1*(data_mat > 0)
