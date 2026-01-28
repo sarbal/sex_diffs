@@ -255,11 +255,11 @@ library(ashr)
 all_genes = list()
 res_all = list() 
 for(celltype in celltypes){ 
-  load(paste0("mast_corrected/mast_DE_v5A_", celltype ,".Rdata")) 
+  load(paste0("sexMAST/mast_DE_v5A_", celltype ,".Rdata")) 
   mast = test 
-  load(paste0("mast_corrected/mast_DE_v5B_", celltype ,".Rdata")) 
+  load(paste0("sexMAST/mast_DE_v5B_", celltype ,".Rdata")) 
   mast_adj = test 
-  load(paste0("wilcox_DE_", celltype, ".Rdata")) 
+  load(paste0("sexDE/wilcox_DE_", celltype, ".Rdata")) 
   orig = test
   all_genes = append(all_genes, rownames(orig))
   res_all[[celltype]] = list(mast, mast_adj, orig) 
@@ -358,4 +358,5 @@ recur_up = rowSums(wilcox_gene_mat_up[f.oo,filt])
 ```
 
  
+
 
