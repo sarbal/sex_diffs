@@ -110,6 +110,7 @@ save(pvals_exp, padj, row_filt, col_filt, col_cols, row_cols, pp, celltypes, enr
 ```
 
 
+
 ### Identify marker genes
 ```{r]
 ni = 1 
@@ -246,4 +247,112 @@ enrich.marker.hgnc = lapply(1:dim(annots_az)[2], function(i) gene_set_enrichment
 save(enrich.marker.immp,enrich.marker.hgnc, enrich.marker.c3,  enrich.marker.c2, enrich.marker.c7 ,  enrich.marker.h,  maz.voc,  file="enrich.markers.Rdata")
 ```
 
+#### MASH analysis 
+```{r}
+library(mashr)
+library(ashr)
+# Read in data results 
+all_genes = list()
+res_all = list() 
+for(celltype in celltypes){ 
+  load(paste0("mast_corrected/mast_DE_v5A_", celltype ,".Rdata")) 
+  mast = test 
+  load(paste0("mast_corrected/mast_DE_v5B_", celltype ,".Rdata")) 
+  mast_adj = test 
+  load(paste0("wilcox_DE_", celltype, ".Rdata")) 
+  orig = test
+  all_genes = append(all_genes, rownames(orig))
+  res_all[[celltype]] = list(mast, mast_adj, orig) 
+}
 
+all_genes = unique(unlist(all_genes))
+orig_all = matrix(NA,nrow=length(all_genes), ncol = length(celltypes)) 
+rownames(orig_all) = all_genes
+colnames(orig_all) = celltypes
+effsize_all = orig_all * 0 
+for( celltype in celltypes){ 
+  orig = res_all[[celltype]][[3]]
+  m = match(all_genes, rownames(orig) )
+  f1 = !is.na(m)
+  f2 = m[f1]
+  orig_all[f1,celltype] = orig$p_val[f2]  
+  effsize_all[f1,celltype] = orig$avg_log2FC[f2]  
+}
+ effsize_all[is.na(effsize_all)]  = 0  # set missing to 0  
+ orig_all[is.na(orig_all)] = 1 # set missing to 1 
+
+# remove some cell types 
+celltypes = colnames(zscore_data)
+skip = c("Eryth", "HSPC", "Platelet")
+filt =  is.na(match(  celltypes, skip) )
+ 
+tests = lapply(1:length(orig_all[,1]), function(i) rank(orig_all[i,filt])* orig_all[i,]/rank(orig_all[i,filt]) ) 
+simes_pvals = sapply(1:length(tests), function(i) min(tests[[i]]))
+simes_padj = p.adjust(simes_pvals, method = "bonf") # can use the adjusted p-values in simes instead, or adjust post 
+save(orig_all,simes_padj,effsize_all, file="data_for_mash.Rdata")
+
+zscore_data = apply( orig_all , 2, scale) 
+data = mash_set_data(zscore_data, (zscore_data*0)+1)  
+
+
+# Canonical covariance 
+U.c = cov_canonical(data) ## Set up the covariance matrices  
+m.c = mash(data, U.c) ## Fit the model 
+print(get_loglik(m),digits = 10)
+
+# Data driven 
+m.1by1 = mash_1by1(data) #  select strong signals 
+strong = get_significant_results(m.1by1,0.05)
+U.pca = cov_pca(data,5,subset=strong) # Obtain initial data-driven covariance matrices
+U.ed = cov_ed(data, U.pca, subset=strong) # Apply Extreme Deconvolution
+m.ed = mash(data, U.ed) ## Fit the model 
+print(get_loglik(m.ed),digits = 10)
+
+# Data driven and canonical analysis 
+U.c = cov_canonical(data)  
+m   = mash(data, c(U.c,U.ed))
+print(get_loglik(m),digits = 10)
+
+## Accounting for correlations among measurements - simple 
+V.simple = estimate_null_correlation_simple(data) # estimate correlations:
+data.Vsimple = mash_update_data(data, V=V.simple)
+U.c = cov_canonical(data.Vsimple) 
+m.Vsimple = mash(data.Vsimple, U.c) # fits with correlations because data.V includes correlation information 
+print(get_loglik(m.Vsimple),digits=10) # log-likelihood of the fit with correlations set to V
+
+m.orig = mash(data, U.c) # fits without correlations because data object was set up without correlations
+print(get_loglik(m.orig),digits=10)
+
+
+## Accounting for correlations among measurements - Estimate the residual correlations using EM method
+V.em = mash_estimate_corr_em(data, U.c, details = TRUE)
+m.Vem = V.em$mash.model
+print(get_loglik(m.Vem),digits=10) # log-likelihood of the fit
+
+
+loglik = c(get_loglik(m.orig), get_loglik(m.Vsimple), get_loglik(m.Vem), 
+           get_loglik(m), get_loglik(m.ed), get_loglik(m.c) ) 
+
+significant = c( length(get_significant_results(m.orig)), length(get_significant_results(m.Vsimple)),
+                  length(get_significant_results(m.Vem)), length(get_significant_results(m)),
+                  length(get_significant_results(m.ed)), length(get_significant_results(m.c)) )
+
+
+tb = rbind(loglik, significant)
+colnames(tb) = c('without cor', 'V simple', 'V EM', 'joint', 'data driven', 'canonical' )
+row.names(tb) = c('log likelihood', '# significance' )
+ 
+x = get_pairwise_sharing(m.Vem, factor=0.5)
+corrplot(x, method='color', col.lim=c(0,1), type='upper', addCoef.col = "black", tl.col="black", tl.srt=45, title = 'Pairwise Sharing by Magnitude', mar = c(4,0,4,0), number.cex = 0.5)
+
+
+## filter/compare with original results 
+mm = match( names(get_significant_results(m.Vem)),rownames(sex_genes_mat_wilcox) )
+f.v= !is.na(mm)
+f.oo = mm[f.v]
+recur_down = rowSums(wilcox_gene_mat_down[f.oo,filt])
+recur_up = rowSums(wilcox_gene_mat_up[f.oo,filt])
+
+```
+
+ 
